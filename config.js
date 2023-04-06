@@ -1,5 +1,5 @@
-config={
-    port: 3000,
+let config={
+    port: 8000,
     dbConnection: "mongodb://127.0.0.1:27017/Library"
 }
 
