@@ -1,4 +1,6 @@
-.App {
+
+.App
+{
   text-align: center;
   display: flex;
   min-height: 100vh;
@@ -37,6 +39,7 @@ input {
 button {
   border: none;
   background-color: white;
+  margin:0 5px;
   padding: 20px;
   border-radius: 10px;
   cursor: pointer;

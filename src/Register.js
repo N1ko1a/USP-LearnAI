@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import './LoginRegister.css';
 export const Register = (props) => {
     const [email, setEmail] = useState('');
     const [pass, setPass] = useState('');
@@ -22,7 +22,7 @@ export const Register = (props) => {
             <input value={pass} onChange={(e) => setPass(e.target.value)} type="password" placeholder="********" id="password" name="password" />
             <button type="submit">Log In</button>
         </form>
-        <button className="link-btn" onClick={() => props.onFormSwitch('login')}>Already have an account? Login here.</button>
+        <a href="/login">Don't have an account? Register here.</a>
     </div>
     )
 }

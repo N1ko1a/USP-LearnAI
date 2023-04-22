@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 import logo from './logo.svg';
 import './App.css';
-import { Login } from "./Login";
-import { Register } from "./Register";
 import { Navbar } from "./components";
 import { Header } from "./containers";
- 
-function App() {
-  const [currentForm, setCurrentForm] = useState('login');
+import {Login} from "./Login";
+import {Routes, Route, useNavigate} from 'react-router-dom';
 
-  const toggleForm = (formName) => {
-    setCurrentForm(formName);
-  }
+
+function App() {
+ 
+
+
+  
 
   return (
    
@@ -20,10 +20,12 @@ function App() {
         <Navbar/>
         <Header/>
       </div>
+      
       {
         // currentForm === "login" ? <Login onFormSwitch={toggleForm} /> : <Register onFormSwitch={toggleForm} />
       }
      </div> 
+     
   );
 }
 
