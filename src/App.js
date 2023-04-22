@@ -3,7 +3,9 @@ import logo from './logo.svg';
 import './App.css';
 import { Login } from "./Login";
 import { Register } from "./Register";
-
+import { Navbar } from "./components";
+import { Header } from "./containers";
+ 
 function App() {
   const [currentForm, setCurrentForm] = useState('login');
 
@@ -12,11 +14,16 @@ function App() {
   }
 
   return (
-    <div className="App">
+   
+   <div className="App">
+      <div className="gradient__bg">
+        <Navbar/>
+        <Header/>
+      </div>
       {
-        currentForm === "login" ? <Login onFormSwitch={toggleForm} /> : <Register onFormSwitch={toggleForm} />
+        // currentForm === "login" ? <Login onFormSwitch={toggleForm} /> : <Register onFormSwitch={toggleForm} />
       }
-    </div>
+     </div> 
   );
 }
 
