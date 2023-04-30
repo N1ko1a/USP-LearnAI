@@ -1,0 +1,94 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    
+    font-family: 'Outfit';
+  }
+
+  h2, h4,  p, a{
+    color: #fff;
+  }
+.bouth{
+    overflow: hidden;
+    /*background-image: url(../assets/kelly-sikkema-tk9RQCq5eQo-unsplash.jpg);
+*/
+    /* Full height */
+    
+    height: 100vh; 
+
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.output-text{
+    position:relative;
+    text-align: center;
+    width: 100%;
+    height: 90vh;
+    top:100px;
+    
+}
+    
+
+.input-text{
+    position:relative;
+    bottom:0px;
+    width: 100%;
+    
+    
+}
+.input-text input{
+    
+    width: 90%;
+    margin:5px;
+    background: transparent;
+    color: #fff;
+    border: 1px solid #fff;
+}
+.input-text button{
+    width: 8%;
+    padding: 12px 32px;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  background: transparent;
+  border-radius: 10px;
+  color: #fff;
+  border: 1px solid #fff;
+  cursor: pointer;
+
+}
+.input-text button{
+    background: rgba(#000, #000, #000, .2);
+    transition: 0.5s;
+  }
+  .input-text button:hover{
+    background: rgba(255, 255, 255, .3);
+  }
+
+.output-text ul{
+
+    list-style-type: none;
+      
+}
+
+.output-text li{
+    color: #fff;
+}
+
+@media  screen and (max-width: 1000px) {
+    
+    .input-text input{
+    
+        width: 82%;
+        
+    }
+    .input-text button{
+        width: 15%;
+    
+    }
+}
