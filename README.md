@@ -1,3 +1,6 @@
+
 npm install\
-npm start\
-node server/server.js
+node server/server.js\
+cd .\react-app\
+npm install\
+npm run dev
