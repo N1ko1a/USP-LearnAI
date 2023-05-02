@@ -1,5 +1,7 @@
-import React, { useState } from "react"
-function Register(){
+import React, { useState } from "react";
+import './PopupStyles.css'
+import '../routes/LoginRegisterStyles.css'
+function Popup1(props: { title: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined; message: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined; onClose: React.MouseEventHandler<HTMLButtonElement> | undefined; }){
     const [email, setEmail] = useState('');
     const [pass, setPass] = useState('');
     const [name, setName] = useState('');
@@ -8,9 +10,10 @@ function Register(){
         e.preventDefault();
         console.log(email);
     }
-
     return(
-        <div className="auth-form-container">
+        <div className="popup">
+      <div className="popup-content">
+      <div className="auth-form-container">
             <h2>Register</h2>
         <form className="register-form" onSubmit={handleSubmit}>
             <label htmlFor="name">Full name</label>
@@ -21,9 +24,12 @@ function Register(){
             <input value={pass} onChange={(e) => setPass(e.target.value)} type="password" placeholder="********" id="password" name="password" />
             <button type="submit">Register</button>
         </form>
-        <a href="/Login">You have an account? Login here.</a>
+       
     </div>
-    )
-}
+    <button className="popup-close-btn" onClick={props.onClose}>Close</button>
+    </div>
+    </div>
 
-export default Register
+  );
+}
+export default Popup1

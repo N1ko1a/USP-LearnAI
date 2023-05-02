@@ -31,3 +31,6 @@
     margin-bottom: 1.6rem;
     color: #fff;
 }
+.btn{
+    transition: 0.4s;
+}
