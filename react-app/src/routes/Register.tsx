@@ -1,11 +1,5 @@
-<<<<<<<< Updated upstream:react-app/src/routes/Register.js
-import React, { useState } from "react";
-import './LoginRegister.css';
-export const Register = (props) => {
-========
 import React, { useState } from "react"
 function Register(){
->>>>>>>> Stashed changes:react-app/src/routes/Register.tsx
     const [email, setEmail] = useState('');
     const [pass, setPass] = useState('');
     const [name, setName] = useState('');
@@ -27,11 +21,7 @@ function Register(){
             <input value={pass} onChange={(e) => setPass(e.target.value)} type="password" placeholder="********" id="password" name="password" />
             <button type="submit">Register</button>
         </form>
-<<<<<<<< Updated upstream:react-app/src/routes/Register.js
-        <a href="/login">Don't have an account? Register here.</a>
-========
         <a href="/Login">You have an account? Login here.</a>
->>>>>>>> Stashed changes:react-app/src/routes/Register.tsx
     </div>
     )
 }
