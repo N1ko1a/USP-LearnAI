@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import './PopupStyles.css'
-
+import '../routes/LoginRegisterStyles.css'
 function Popup(props: { title: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined; message: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined; onClose: React.MouseEventHandler<HTMLButtonElement> | undefined; }){
     const [email, setEmail] = useState('');
     const [pass, setPass] = useState('');

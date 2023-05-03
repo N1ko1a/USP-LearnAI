@@ -13,7 +13,7 @@
   }
   
   .popup-content {
-    background-color: rgba(225, 225, 225, 0.4);
+    background-color: rgba(225, 225, 225, 0.3);
     padding: 10px;
     color: #000;
     border-radius: 20px;
@@ -28,6 +28,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+ 
     max-height: 65vh; /* Adjust to your preference */
     overflow-y: hidden; /* Add scrollbars if the content overflows */
   }

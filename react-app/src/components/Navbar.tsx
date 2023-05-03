@@ -1,13 +1,15 @@
 import React, {useState} from 'react'
 import './NavbarStaylse.css'
-import {Link} from 'react-router-dom'
+
+//import {Link} from 'react-router-dom'
+import {Link} from 'react-scroll'
 import {FaBars, FaTimes } from 'react-icons/fa'
 import Popup from './Popup';
 import Popup1 from './Popup1';
 function Navbar() {
     const[click, setClick] = useState(false)
     const handleClick = () => setClick(!click)
-
+    const closeMenu = () => setClick(false)
     const [showPopup, setShowPopup] = useState(false);
 
     const handleOpenPopup = () => {
@@ -29,19 +31,29 @@ const handleClosePopup1 = () => {
 };
   return (
     <div className='header'>
-        <Link to='/'><h1>LearnAI</h1></Link>
+        <Link to='/' spy={true} smooth={true} offset={50} duration={500} onClick={closeMenu}><h1>LearnAI</h1></Link>
         <ul className={click ? 'nav-menu active' : 'nav-menu'}>
             <li>
-                <Link to='/'>Home</Link>
+                <Link  to='/' spy={true} smooth={true} offset={50} duration={500} onClick={closeMenu}>Home</Link>
             </li>
             <li>
-                <Link to='/ChatGPT'>LearnGPT</Link>
+                <Link  to='AboutUs' spy={true} smooth={true} offset={50} duration={500} onClick={closeMenu}>About Us</Link>
             </li>
             <li>
-                <Link to='/About'>About Us</Link>
+                <Link  to='Pricing'  spy={true} smooth={true} offset={-100} duration={500} onClick={closeMenu}>Pricing</Link>
             </li>
+           
+            
             <li>
-            <button className='signin-btn' type='button' onClick={handleOpenPopup}>Sign In</button>
+            {/* <button className='signup-btn' type='button' onClick={handleOpenPopup1}>Sign Up</button>
+{showPopup1 && (
+  <Popup1
+    title="Popup Title"
+    message="This is the message in the popup."
+    onClose={handleClosePopup1}
+  />
+)}     */}
+            <button className='signup-btn' type='button' onClick={handleOpenPopup}>Sign In</button>
             {showPopup && (
         <Popup
           title="Popup Title"
@@ -49,14 +61,7 @@ const handleClosePopup1 = () => {
           onClose={handleClosePopup}
         />
       )}
-          <button className='signup-btn' type='button' onClick={handleOpenPopup1}>Sign Up</button>
-{showPopup1 && (
-  <Popup1
-    title="Popup Title"
-    message="This is the message in the popup."
-    onClose={handleClosePopup1}
-  />
-)}     
+           
             </li>
         </ul>
         

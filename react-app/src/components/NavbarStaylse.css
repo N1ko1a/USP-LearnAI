@@ -16,11 +16,18 @@
 .nav-menu li {
     padding: 0 1rem;
 }
-
+.header h1{
+    cursor: pointer;
+}
+.header h1:hover{
+    color: rgba(255, 255, 255, .4);
+    transition: 0.5s;
+}
 .nav-menu a{
     font-size: 1.2rem;
     font-weight: 500;
     transition-duration: 0.5s;
+    cursor: pointer;
 }
 .nav-menu a:hover{
     color: gray;
