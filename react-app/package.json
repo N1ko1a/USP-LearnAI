@@ -12,6 +12,7 @@
   "dependencies": {
     "@types/aria-query": "^5.0.1",
     "react": "^18.2.0",
+    "react-animated-css": "^1.2.1",
     "react-dom": "^18.2.0",
     "react-icons": "^4.8.0",
     "react-native-elements": "^3.4.3",
@@ -19,6 +20,7 @@
     "react-scroll": "^1.8.9"
   },
   "devDependencies": {
+    "@types/aos": "^3.0.4",
     "@types/babel__generator": "^7.6.4",
     "@types/babel__template": "^7.4.1",
     "@types/node": "^18.16.3",

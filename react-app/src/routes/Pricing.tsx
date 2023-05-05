@@ -1,8 +1,9 @@
-import React, {useState} from 'react'
+import React, {useState,useEffect} from 'react'
 import './PricingStyles.css'
 
 import Popup1 from '../components/Popup1';
-
+import AOS from 'aos'
+import 'aos/dist/aos.css'
 
 function Pricing(){
 
@@ -28,13 +29,23 @@ const handleOpenPopup1 = () => {
 const handleClosePopup1 = () => {
   setShowPopup1(false);
 };
-    return (
+    
+
+useEffect(() => {
+  AOS.init({duration : 1000})
+},[]);
+
+
+
+
+return (
+      
       <div className='Pricing' id='Pricing'> 
         <div className="background" >
-          
+     
   <div className="container">
     
-    <div className="panel pricing-table">
+    <div className="panel pricing-table" data-aos="flip-left">
       
       <div className="pricing-plan">
         
