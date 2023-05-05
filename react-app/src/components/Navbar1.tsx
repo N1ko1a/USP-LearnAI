@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import './NavbarStaylse.css'
-
-//import {Link} from 'react-router-dom'
+import Button from '@mui/material/Button';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {Link} from 'react-router-dom'
 
 import {FaBars, FaTimes } from 'react-icons/fa'
@@ -35,7 +35,9 @@ const handleClosePopup1 = () => {
         <Link to='/' ><h1>LearnAI</h1></Link>
         <ul className={click ? 'nav-menu active' : 'nav-menu'}>
             <li>
-                <Link  to='/' >Home</Link>
+                <Link  to='/' >
+                <Button variant="outlined" endIcon={<ArrowBackIcon />} onClick={handleClick}>Home</Button>
+                </Link>
             </li>
             
            
