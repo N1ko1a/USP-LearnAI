@@ -3,6 +3,7 @@ import './NavbarStaylse.css'
 
 //import {Link} from 'react-router-dom'
 import {Link} from 'react-scroll'
+
 import {FaBars, FaTimes } from 'react-icons/fa'
 import Popup from './Popup';
 import Popup1 from './Popup1';

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './ChatGPTStyles.css'
-import Navbar from '../components/Navbar';
+import Navbar from '../components/Navbar1';
+import Navbar1 from '../components/Navbar1';
 function ChatGPT() {
   const [text, setText] = useState('');
   const [output, setOutput] = useState<string[]>([]);
@@ -16,7 +17,7 @@ function ChatGPT() {
 
   return (
     <div>
-      <Navbar/>
+      <Navbar1/>
       <div className='bouth'>
       
 
