@@ -7,10 +7,14 @@ function Popup(props: { title: string | number | boolean | React.ReactElement<an
 
     const handleSubmit = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
-        console.log(email);
-
-
-    
+        const requestOptions = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json'},
+          body: JSON.stringify({ email: email, password: pass })
+      };
+      fetch('http://localhost:8000/auth/login', requestOptions)
+          .then(response => response.json())
+          .then(data => console.log(data.json))
     }
     return(
         <div className="popup">

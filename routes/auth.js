@@ -15,7 +15,7 @@ router.post('/login',
     passport.authenticate('local', {session: false}),
     (req,res)=>{
     
-    res.send(req.user.generateJwt())
+    res.send({json:req.user.generateJwt()})
 })
 
 module.exports = router;

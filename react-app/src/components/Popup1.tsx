@@ -15,7 +15,6 @@ function Popup1(props: { title: string | number | boolean | React.ReactElement<a
         };
         fetch('http://localhost:8000/auth/register', requestOptions)
             .then(response => console.log(response));
-        console.log(JSON.stringify({ email: email, name: name, password: pass }));
     }
     return(
         <div className="popup">
