@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 var AnswerSchema = mongoose.Schema({
     answer: {type: String, required: true},
-    prompt_id: {type: mongoose.Schema.Types.ObjectId, ref:"prompt"}
+    prompt_id: {type: mongoose.Schema.Types.ObjectId, ref:"prompt", unique: true}
 })
 
 var AnswerModel = mongoose.model('answer', AnswerSchema)

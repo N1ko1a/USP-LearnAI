@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 var PromptSchema = mongoose.Schema({
     user_id: {type: mongoose.Schema.Types.ObjectId, ref:"user"},
     prompt: {type: String, required: true},
-    conversation_id: {type: Number, unique: true, required: true}
+    conversation_id: {type: Number, required: true}
 })
 
 var PromptModel = mongoose.model('prompt', PromptSchema)

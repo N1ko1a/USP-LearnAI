@@ -11,10 +11,17 @@ function ChatGPT() {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setText(event.target.value);
   }
-
-  const handleClick = () => {
+  const handleClick = (e: { preventDefault: () => void; }) => {
     setOutput([...output, text]);
     setText('');
+    e.preventDefault();
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDY0ZmY3YTI0MDEzNzE2NzRlOTQ2MWUiLCJleHBpcmUiOjE2ODQ5NDU0MDIsImlhdCI6MTY4NDM0MDYwMn0.IGWbiqd5w-hpOqZzO6UV-w0aH7aMwc9p2sQDYUsvqKA'},
+        body: JSON.stringify({user_id: "6464fce935dce1ac36c45719", prompt: text, conversation_id: 1})//TODO: REMOVE HARD CODED VALUES
+    };
+    fetch('http://localhost:8000/prompt', requestOptions)
+        .then(response => console.log(response));
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
