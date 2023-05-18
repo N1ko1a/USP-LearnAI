@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import './ChatGPTStyles.css'
-import Navbar from '../components/Navbar1';
 import Navbar1 from '../components/Navbar1';
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
@@ -10,65 +9,72 @@ const cookies = new Cookies();
 const jwt = cookies.get('jwt').json
 let decoded_jwt = jwt_decode(jwt)
 let user_id = decoded_jwt['_id']
-let previous_prompts = null
-let previous_answers = null
-let previous_chats = ''
-const requestOptions = {
-  method: 'GET',
-  headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt}
-};
-async function fetchData() {
-  const response = await fetch('http://localhost:8000/prompt/user/' + user_id, requestOptions);
-  const data = await response.json();
-  previous_prompts = data;
-  const responseb = await fetch('http://localhost:8000/answer/user/' + user_id, requestOptions);
-  const datab = await responseb;
-  previous_answers = datab;
-}
 
-fetchData();
 function ChatGPT() {
-  //Output text when page is loaded 
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulate a delay of 2 seconds
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-
-    // Cleanup the timer when the component unmounts
-    return () => clearTimeout(timer);
-  }, []);
- 
-
-  //user inputs and outputs text
+  const [previousPrompts, setPreviousPrompts] = useState([]);
+  const [previousAnswers, setPreviousAnswers] = useState([]);
   const [text, setText] = useState('');
   const [output, setOutput] = useState<string[]>([]);
 
-  
+  useEffect(() => {
+    const fetchData = async () => {
+      const requestOptions = {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt}
+      };
+
+      const promptResponse = await fetch('http://localhost:8000/prompt/user/' + user_id, requestOptions);
+      const promptData = await promptResponse.json();
+      setPreviousPrompts(promptData);
+
+      const answerResponse = await fetch('http://localhost:8000/answer/user/' + user_id, requestOptions);
+      const answerData = await answerResponse.json();
+      setPreviousAnswers(answerData);
+
+      setIsLoading(false);
+    };
+
+    fetchData();
+  }, []);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setText(event.target.value);
-  }
+  };
+
   const handleClick = (e: { preventDefault: () => void; }) => {
     setOutput([...output, text]);
     setText('');
     e.preventDefault();
     const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt},
-        body: JSON.stringify({user_id: user_id, prompt: text, conversation_id: 1})
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt},
+      body: JSON.stringify({ user_id: user_id, prompt: text, conversation_id: 1 })
     };
     fetch('http://localhost:8000/prompt', requestOptions)
-        .then(response => console.log(response));
-    
+      .then(response => console.log(response));
+    const requestOptions1 = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Allow-Credentials': true},
+        body: JSON.stringify({prompt: text})
+    };
+    fetch('http://localhost:5000', requestOptions1)
+        .then(response => response.json())
+        .then(data => {
+          setOutput([...output, "ChatGPT: " + data.data])
+        });
+  };
+
+  let nesto = "";
+  for (let i = 0; i < previousPrompts.length; i++) {
+    nesto += "You:" + previousPrompts[i].prompt + "                                              ";
+    if (previousAnswers[i]) {
+      nesto += "LearnGPT:" + previousAnswers[i].answer + "                                         ";
+    }
   }
-  const nesto = "kasdasdsad";
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-     
       setOutput([...output, text]);
       setText('');
     }
@@ -78,28 +84,22 @@ function ChatGPT() {
     <div>
       <Navbar1/>
       <div className='bouth'>
-      
-
         <div className='output-text'>
-            <ul>
-            
-              {isLoading ? (
+          <ul>
+            {isLoading ? (
               <p>Loading...</p>
-              ) : (
+            ) : (
               <p>{nesto}</p>
-              )}
-
-
-              {output.map((item, index) => (
+            )}
+            {output.map((item, index) => (
               <li key={index}>{item}</li>
-              ))}
-            </ul>
+            ))}
+          </ul>
         </div>
         <div className='input-text'>
-            <input type="text" value={text} placeholder="Enter text and press Enter" onChange={handleChange} onKeyDown={handleKeyDown} />
-            <Button  variant="contained" endIcon={<SendIcon />} onClick={handleClick} >SEND</Button>
+          <input type="text" value={text} placeholder="Enter text and press Enter" onChange={handleChange} onKeyDown={handleKeyDown} />
+          <Button variant="contained" endIcon={<SendIcon />} onClick={handleClick}>SEND</Button>
         </div>
-      
       </div>
     </div>
   );

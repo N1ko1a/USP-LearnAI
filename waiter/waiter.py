@@ -1,16 +1,43 @@
 
 import pymongo
 import random
-import datetime
 import requests
+from flask_cors import CORS
+from flask import Flask, request
 
+app = Flask(__name__)
+CORS(app)
 
+global context
+context = "ME:Pretend you're an enthusiastic english teacher. Do not break character or speak in any other language than english. Correct my grammar mistakes and talk with me about things, and freely ask any questions.\n ChatGPT:Ok.\nME:Hello! Do you like apples?\nChatGPT:I do not have a capability of liking a fruit.\n ME:I liek aples"
+client = pymongo.MongoClient("localhost", 27017, maxPoolSize=50)
+db = client["GPTDB"]
+collection = db['prompts']
+cursor = collection.find()
+prompt_list = []
+answer_list = []
+for document in cursor:
+    prompt_list.append(document['prompt'])
+collection = db['answers']
+cursor = collection.find()
+for document in cursor:
+    answer_list.append(document['answer'])
+for i, prompt in enumerate(prompt_list):
+    context += " ME: " + prompt + "\n" + "ChatGPT: " + answer_list[i] + "\n"
 
-
-
-
-
-
+@app.route('/', methods=['POST'])
+def handle_post():
+    data = request.get_json()  # Get the JSON data from the request
+    # Process the data or perform any necessary actions
+    # You can access specific fields of the JSON data using data['field_name']
+    waiter = Waiter()
+    global context
+    context += data['prompt'] + "\n"
+    r = waiter.request(context)
+    print(context)
+    # Return a response
+    response = {'message': 'POST request received', 'data': r}
+    return response, 200
 
 class Waiter:
 
@@ -36,23 +63,7 @@ class Waiter:
 
 
 def main():
-    client = pymongo.MongoClient("localhost", 27017, maxPoolSize=50)
-    db = client["GPTDB"]
-    collection = db['prompts']
-    cursor = collection.find()
-    prompt_list = []
-    answer_list = []
-    for document in cursor:
-        prompt_list.append(document['prompt'])
-    collection = db['answers']
-    cursor = collection.find()
-    for document in cursor:
-        answer_list.append(document['answer'])
-    waiter = Waiter()
-    r = waiter.request("ME:Pretend you're an enthusiastic english teacher. Do not break character or speak in any other language than english. Correct my grammar mistakes and talk with me about things, and freely ask any questions.\n ChatGPT:Ok.\nME:Hello! Do you like apples?\nChatGPT:I do not have a capability of liking a fruit.\n ME:I liek aples")
-    print(r)
-    #records.insert_one({'ime': 'ChatGPT', 'poruka': r, 'vreme': datetime.datetime.now()})
+    app.run()
 
 if __name__=='__main__':
     main()
-
