@@ -6,9 +6,13 @@ import SendIcon from '@mui/icons-material/Send';
 import Cookies from 'universal-cookie';
 import jwt_decode from "jwt-decode";
 const cookies = new Cookies();
-const jwt = cookies.get('jwt').json
-let decoded_jwt = jwt_decode(jwt)
-let user_id = decoded_jwt['_id']
+let jwt = cookies.get('jwt')
+let user_id = ''
+if(jwt){
+  jwt = jwt.json
+  let decoded_jwt = jwt_decode(jwt)
+  user_id = decoded_jwt['_id']
+}
 
 function ChatGPT() {
   const [isLoading, setIsLoading] = useState(true);
