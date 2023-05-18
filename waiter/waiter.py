@@ -6,9 +6,7 @@ import requests
 
 
 
-client = pymongo.MongoClient('mongodb+srv://ivanovicn98:Otakustream1@cluster0.dobiyo6.mongodb.net/?retryWrites=true&w=majority')
-db = client.get_database('learnAI_db')
-records = db.messages
+
 
 
 
@@ -38,10 +36,23 @@ class Waiter:
 
 
 def main():
+    client = pymongo.MongoClient("localhost", 27017, maxPoolSize=50)
+    db = client["GPTDB"]
+    collection = db['prompts']
+    cursor = collection.find()
+    prompt_list = []
+    answer_list = []
+    for document in cursor:
+        prompt_list.append(document['prompt'])
+    collection = db['answers']
+    cursor = collection.find()
+    for document in cursor:
+        answer_list.append(document['answer'])
     waiter = Waiter()
     r = waiter.request("ME:Pretend you're an enthusiastic english teacher. Do not break character or speak in any other language than english. Correct my grammar mistakes and talk with me about things, and freely ask any questions.\n ChatGPT:Ok.\nME:Hello! Do you like apples?\nChatGPT:I do not have a capability of liking a fruit.\n ME:I liek aples")
     print(r)
-    records.insert_one({'ime': 'ChatGPT', 'poruka': r, 'vreme': datetime.datetime.now()})
+    #records.insert_one({'ime': 'ChatGPT', 'poruka': r, 'vreme': datetime.datetime.now()})
+
 if __name__=='__main__':
     main()
 

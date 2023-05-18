@@ -11,6 +11,11 @@ var findById = function(id)
     return PromptModel.findById(id)
 }
 
+var findByUserId = function(user_id)
+{
+    return PromptModel.findByUserId(user_id)
+}
+
 var save = function(prompt)
 {
     return PromptModel.savePrompt(prompt);
@@ -19,5 +24,6 @@ var save = function(prompt)
 module.exports = {
     find,
     findById,
+    findByUserId,
     save
 }

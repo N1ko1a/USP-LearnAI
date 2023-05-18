@@ -11,13 +11,19 @@ var findById = function(id)
     return AnswerModel.findById(id)
 }
 
+var findByPromptId = function(prompt_id)
+{
+    return AnswerModel.findByPromptId(prompt_id)
+}
+
 var save = function(answer)
 {
-    return AnswerModel.savePrompt(answer);
+    return AnswerModel.saveAnswer(answer);
 }
 
 module.exports = {
     find,
     findById,
+    findByPromptId,
     save
 }

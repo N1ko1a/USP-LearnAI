@@ -18,5 +18,9 @@ PromptModel.savePrompt = function (prompt){
     return newPrompt;
 }
 
+PromptModel.findByUserId = function (user_id) {
+    var ObjectId = mongoose.Types.ObjectId;
+    return PromptModel.find({ user_id: new ObjectId(user_id) }, { prompt: 1 , _id: 0}).exec();
+};
 
 module.exports = PromptModel
