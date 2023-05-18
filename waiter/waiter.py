@@ -23,7 +23,7 @@ cursor = collection.find()
 for document in cursor:
     answer_list.append(document['answer'])
 for i, prompt in enumerate(prompt_list):
-    context += " ME: " + prompt + "\n" + "ChatGPT: " + answer_list[i] + "\n"
+    context += "\n ME: " + prompt + "\n" + "ChatGPT: " + answer_list[i] + "\n"
 
 @app.route('/', methods=['POST'])
 def handle_post():
@@ -32,7 +32,7 @@ def handle_post():
     # You can access specific fields of the JSON data using data['field_name']
     waiter = Waiter()
     global context
-    context += data['prompt'] + "\n"
+    context += " " + data['prompt'] + "\n"
     r = waiter.request(context)
     print(context)
     # Return a response

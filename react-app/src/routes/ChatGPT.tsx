@@ -55,15 +55,24 @@ function ChatGPT() {
       .then(response => console.log(response));
     const requestOptions1 = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Allow-Credentials': true},
+        headers: { 'Content-Type': 'application/json'},
         body: JSON.stringify({prompt: text})
-    };
-    fetch('http://localhost:5000', requestOptions1)
-        .then(response => response.json())
-        .then(data => {
-          setOutput([...output, "ChatGPT: " + data.data])
-        });
-  };
+    };fetch('http://localhost:5000', requestOptions1)
+    .then(response => response.json())
+    .then(data => {
+      setOutput([...output, "ChatGPT: " + data.data]);
+  
+      const requestOptions2 = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt },
+        body: JSON.stringify({ answer: data.data, user_id: user_id})//FIXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      };
+  
+      fetch('http://localhost:8000/answer', requestOptions2)
+        .then(response => response.json());
+    });
+  }
+  
 
   let nesto = "";
   for (let i = 0; i < previousPrompts.length; i++) {
