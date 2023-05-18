@@ -6,7 +6,6 @@ var passport = require('./config/config')
 router.get('/',
     async (req, res) => {
         var prompts = await PromptService.find()
-        // console.log(books);
         res.send(prompts);
 })
 

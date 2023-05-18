@@ -4,6 +4,8 @@ import Navbar from '../components/Navbar1';
 import Navbar1 from '../components/Navbar1';
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
+import Cookies from 'universal-cookie';
+import jwt_decode from "jwt-decode";
 function ChatGPT() {
   const [text, setText] = useState('');
   const [output, setOutput] = useState<string[]>([]);
@@ -15,10 +17,14 @@ function ChatGPT() {
     setOutput([...output, text]);
     setText('');
     e.preventDefault();
+    const cookies = new Cookies();
+    const jwt = cookies.get('jwt').json
+    let decoded_jwt = jwt_decode(jwt)
+    let user_id = decoded_jwt['_id']
     const requestOptions = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDY0ZmY3YTI0MDEzNzE2NzRlOTQ2MWUiLCJleHBpcmUiOjE2ODQ5NDU0MDIsImlhdCI6MTY4NDM0MDYwMn0.IGWbiqd5w-hpOqZzO6UV-w0aH7aMwc9p2sQDYUsvqKA'},
-        body: JSON.stringify({user_id: "6464fce935dce1ac36c45719", prompt: text, conversation_id: 1})//TODO: REMOVE HARD CODED VALUES
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt},
+        body: JSON.stringify({user_id: user_id, prompt: text, conversation_id: 1})//TODO: REMOVE HARD CODED VALUES
     };
     fetch('http://localhost:8000/prompt', requestOptions)
         .then(response => console.log(response));

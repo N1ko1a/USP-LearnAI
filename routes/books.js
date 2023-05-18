@@ -6,7 +6,6 @@ var passport = require('./config/config')
 router.get('/',
     async (req, res) => {
         var books = await BookService.find()
-        // console.log(books);
         res.send(books);
 })
 

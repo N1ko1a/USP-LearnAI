@@ -13,7 +13,6 @@ BookSchema.virtual('authorName').get(function (){
 var BookModel = mongoose.model('book',BookSchema)
 
 BookModel.saveBook = function (book){
-    //console.log(book)
     var newBook = new BookModel({
         title: book.title,
         yearOfPublication: book.yearOfPublication,

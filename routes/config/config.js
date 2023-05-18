@@ -10,7 +10,6 @@ let localOptions = {
 
 passport.use(new LocalStrategy(localOptions, async function(email, password, done){
     var user = await UserModel.findOne({email:email});
-    // console.log(user)
 
     if (!user)
     {
@@ -44,7 +43,6 @@ var jwtOptions = {
 
 passport.use(new JwtStrategy(jwtOptions, async function(jwt_payload, done){
     var user = await UserModel.findById(jwt_payload._id)
-    console.log(user)
     if (!user)
     {
         done(null, null ,{

@@ -47,7 +47,7 @@ UserSchema.methods.getRole = function()
     return "USER";
 }
 
-var UserModel = mongoose.model('user',UserSchema);
+var UserModel = mongoose.model('user', UserSchema);
 
 UserModel.register = async function(email, name, password)
 {
@@ -61,8 +61,6 @@ UserModel.register = async function(email, name, password)
     try
     {
         await user.save();
-        console.log(user)
-        console.log(user.generateJwt())
         return user.generateJwt();
     }
     catch
