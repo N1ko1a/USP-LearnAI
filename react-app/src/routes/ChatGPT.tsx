@@ -6,8 +6,28 @@ import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
 import Cookies from 'universal-cookie';
 import jwt_decode from "jwt-decode";
-function ChatGPT() {
+const cookies = new Cookies();
+const jwt = cookies.get('jwt').json
+let decoded_jwt = jwt_decode(jwt)
+let user_id = decoded_jwt['_id']
+let previous_prompts = null
+let previous_answers = null
+let previous_chats = ''
+const requestOptions = {
+  method: 'GET',
+  headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt}
+};
+async function fetchData() {
+  const response = await fetch('http://localhost:8000/prompt/user/' + user_id, requestOptions);
+  const data = await response.json();
+  previous_prompts = data;
+  const responseb = await fetch('http://localhost:8000/answer/user/' + user_id, requestOptions);
+  const datab = await responseb;
+  previous_answers = datab;
+}
 
+fetchData();
+function ChatGPT() {
   //Output text when page is loaded 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -53,8 +73,6 @@ function ChatGPT() {
       setText('');
     }
   };
-
-
 
   return (
     <div>

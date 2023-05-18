@@ -21,6 +21,13 @@ router.get('/prompt/:prompt_id',
         var answer = await AnswerService.findByPromptId(req.params.prompt_id)
         res.send(answer)
 })
+router.get('/user/:user_id',
+    passport.authenticate('jwt', {session: false}),
+    passport.authorizeRoles('ADMIN', 'USER'),
+    async (req, res) => {
+        var answer = await AnswerService.findByUserId(req.params.user_id)
+        res.send(answer)
+})
 router.post('/',   
     passport.authenticate('jwt', {session: false}),
     passport.authorizeRoles('ADMIN', 'USER'),
