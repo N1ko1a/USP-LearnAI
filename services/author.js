@@ -1,31 +1,31 @@
-var AuthorModel = require('../models/author')
+const AuthorModel = require('../models/author')
 
 
-var find = function()
+const find = function()
 {
     return AuthorModel.find().populate("books");
 }
 
-var findById = function(id)
+const findById = function(id)
 {
     return AuthorModel.findById(id).populate('books')
 }
 
-var update = async function(a)
+const update = async function(a)
 {
     
-    var author = await AuthorModel.updateAuthor(a)
+    const author = await AuthorModel.updateAuthor(a)
     
     return author
 }
 
-var deleteById = async function(id)
+const deleteById = async function(id)
 {
     return AuthorModel.deleteById(id)
 }
 
 
-var save = function(author)
+const save = function(author)
 {
     return AuthorModel.saveAuthor(author);
 }

@@ -1,22 +1,22 @@
-var PromptModel = require('../models/prompt')
+const PromptModel = require('../models/prompt')
 
 
-var find = function()
+const find = function()
 {
     return PromptModel.find()
 }
 
-var findById = function(id)
+const findById = function(id)
 {
     return PromptModel.findById(id)
 }
 
-var findByUserId = function(user_id)
+const findByUserId = function(user_id)
 {
     return PromptModel.findByUserId(user_id)
 }
 
-var save = function(prompt)
+const save = function(prompt)
 {
     return PromptModel.savePrompt(prompt);
 }

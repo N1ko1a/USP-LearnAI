@@ -64,7 +64,7 @@ function ChatGPT() {
     };fetch('http://localhost:5000', requestOptions1)
     .then(response => response.json())
     .then(data => {
-      setOutput([...output, "ChatGPT: " + data.data]);
+      setOutput([...output, "\r\n LearnGPT: " + data.data]);
   
       const requestOptions2 = {
         method: 'POST',
@@ -80,9 +80,9 @@ function ChatGPT() {
 
   let nesto = "";
   for (let i = 0; i < previousPrompts.length; i++) {
-    nesto += "You:" + previousPrompts[i].prompt + "                                              ";
+    nesto +=  previousPrompts[i].prompt + "                                              ";
     if (previousAnswers[i]) {
-      nesto += "LearnGPT:" + previousAnswers[i].answer + "                                         ";
+      nesto += "\r\nLearnGPT:" + previousAnswers[i].answer + "                                         ";
     }
   }
 

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-var AuthorSchema = mongoose.Schema({
+const AuthorSchema = mongoose.Schema({
     name: {type: String, required: true},
     surname: {type: String, required: true},
     dateOfBirth: { type: Number, required: true},
@@ -12,11 +12,11 @@ var AuthorSchema = mongoose.Schema({
     ]
 })
 
-var AuthorModel = mongoose.model('author',AuthorSchema)
+const AuthorModel = mongoose.model('author',AuthorSchema)
 
 AuthorModel.saveAuthor = function (author){
 
-    var newAuthor = new AuthorModel({
+    const newAuthor = new AuthorModel({
         name: author.name,
         surname: author.surname,
         dateOfBirth: author.dateOfBirth
@@ -26,7 +26,7 @@ AuthorModel.saveAuthor = function (author){
 }
 
 AuthorModel.updateAuthor = async function (a){
-    var author = await AuthorModel.findById(a._id);
+    const author = await AuthorModel.findById(a._id);
 
     author.name = a.name;
     author.surname = a.surname;
@@ -39,7 +39,7 @@ AuthorModel.updateAuthor = async function (a){
 
 AuthorModel.deleteById = async function(id){
         
-    var success = await AuthorModel.findOneAndDelete(id).then(async function(author){
+    const success = await AuthorModel.findOneAndDelete(id).then(async function(author){
         if (typeof author !== 'undefined' && author)
         {
             await BookModel.deleteMany({author: author._id})
@@ -55,4 +55,4 @@ AuthorModel.deleteById = async function(id){
 
 module.exports = AuthorModel
 
-var BookModel = require('./book');
+const BookModel = require('./book');

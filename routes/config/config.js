@@ -1,15 +1,15 @@
-var passport = require('passport')
-var LocalStrategy = require('passport-local').Strategy
-var JwtStrategy = require('passport-jwt').Strategy
-var JwtExtractor = require('passport-jwt').ExtractJwt
-var UserModel = require('../../models/user')
+const passport = require('passport')
+const LocalStrategy = require('passport-local').Strategy
+const JwtStrategy = require('passport-jwt').Strategy
+const JwtExtractor = require('passport-jwt').ExtractJwt
+const UserModel = require('../../models/user')
 
 let localOptions = {
     usernameField: "email"
 }
 
 passport.use(new LocalStrategy(localOptions, async function(email, password, done){
-    var user = await UserModel.findOne({email:email});
+    const user = await UserModel.findOne({email:email});
 
     if (!user)
     {
@@ -20,7 +20,7 @@ passport.use(new LocalStrategy(localOptions, async function(email, password, don
     }
     else
     {
-        var validacija = user.validatePassword(password);
+        const validacija = user.validatePassword(password);
         if (!validacija)
         {
             //greska
@@ -36,13 +36,13 @@ passport.use(new LocalStrategy(localOptions, async function(email, password, don
     }
 }))
 
-var jwtOptions = {
+const jwtOptions = {
     secretOrKey: "SECRET",
     jwtFromRequest: JwtExtractor.fromAuthHeaderAsBearerToken()
 }
 
 passport.use(new JwtStrategy(jwtOptions, async function(jwt_payload, done){
-    var user = await UserModel.findById(jwt_payload._id)
+    const user = await UserModel.findById(jwt_payload._id)
     if (!user)
     {
         done(null, null ,{
@@ -58,7 +58,7 @@ passport.use(new JwtStrategy(jwtOptions, async function(jwt_payload, done){
 
 passport.authorizeRoles = (...roles) => (req,res,next) => {
     req.user
-    var validacija = roles.find(role=> role === req.user.getRole());
+    const validacija = roles.find(role=> role === req.user.getRole());
     if (validacija)
         next();
     else

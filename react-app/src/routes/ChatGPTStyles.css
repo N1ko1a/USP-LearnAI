@@ -3,7 +3,9 @@
     margin: 0;
     padding: 0;
 }
-
+p{
+    width:75%;
+}
 body{
     
     font-family: 'Outfit';

@@ -1,8 +1,9 @@
+const crypto =require('crypto');
+
 const mongoose = require('mongoose')
-const crypto = require('crypto')
 const jwt = require('jsonwebtoken')
 
-var UserSchema = mongoose.Schema({
+const UserSchema = mongoose.Schema({
     email: {
         type: String,
         required: true,
@@ -20,18 +21,18 @@ var UserSchema = mongoose.Schema({
 UserSchema.methods.savePassword = function (password)
 {
     this.salt = crypto.randomBytes(16).toString('hex');
-    this.hash = crypto.pbkdf2Sync(password, this.salt, 1000,64,"sha512").toString('hex')
+    this.hash = crypto.pbkdf2Sync(password, this.salt, 100000, 64, 'sha256').toString('hex');
 }
 
 UserSchema.methods.validatePassword = function (password)
 {
-    hash = crypto.pbkdf2Sync(password, this.salt, 1000,64,"sha512").toString('hex')
+    const hash = crypto.pbkdf2Sync(password, this.salt, 100000, 64, "sha256").toString('hex')
     return hash === this.hash;
 }
 
 UserSchema.methods.generateJwt = function()
 {
-    var expire = new Date();
+    let expire = new Date();
     expire.setDate(expire.getDate()+7);
 
     return jwt.sign({
@@ -47,11 +48,11 @@ UserSchema.methods.getRole = function()
     return "USER";
 }
 
-var UserModel = mongoose.model('user', UserSchema);
+const UserModel = mongoose.model('user', UserSchema);
 
 UserModel.register = async function(email, name, password)
 {
-    var user = new UserModel({
+    const user = new UserModel({
         email:email,
         name: name,
         admin: false

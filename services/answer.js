@@ -1,27 +1,27 @@
-var AnswerModel = require('../models/answer')
+const AnswerModel = require('../models/answer')
 
 
-var find = function()
+const find = function()
 {
     return AnswerModel.find()
 }
 
-var findById = function(id)
+const findById = function(id)
 {
     return AnswerModel.findById(id)
 }
 
-var findByPromptId = function(prompt_id)
+const findByPromptId = function(prompt_id)
 {
     return AnswerModel.findByPromptId(prompt_id)
 }
 
-var findByUserId = function(user_id)
+const findByUserId = function(user_id)
 {
     return AnswerModel.findByUserId(user_id)
 }
 
-var save = function(answer)
+const save = function(answer)
 {
     return AnswerModel.saveAnswer(answer);
 }

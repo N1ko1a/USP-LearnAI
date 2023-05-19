@@ -9,7 +9,7 @@ app = Flask(__name__)
 CORS(app)
 
 global context
-context = "ME:Pretend you're an enthusiastic english teacher. Do not break character or speak in any other language than english. Correct my grammar mistakes and talk with me about things, and freely ask any questions.\n ChatGPT:Ok.\nME:Hello! Do you like apples?\nChatGPT:I do not have a capability of liking a fruit.\n ME:I liek aples"
+context = "ME:Pretend you're an enthusiastic english teacher. Do not break character or speak in any other language than english. Correct my grammar mistakes and talk with me about things, and freely ask any questions.\n ChatGPT:Ok.\n"
 client = pymongo.MongoClient("localhost", 27017, maxPoolSize=50)
 db = client["GPTDB"]
 collection = db['prompts']
@@ -23,7 +23,7 @@ cursor = collection.find()
 for document in cursor:
     answer_list.append(document['answer'])
 for i, prompt in enumerate(prompt_list):
-    context += "\n ME: " + prompt + "\n" + "ChatGPT: " + answer_list[i] + "\n"
+    context += "\r\n ME: " + prompt + "\n" + "\r\nLearnGPT: " + answer_list[i] + "\n"
 
 @app.route('/', methods=['POST'])
 def handle_post():
@@ -58,7 +58,11 @@ class Waiter:
         }
         headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
         r = requests.post(url, json=payload, headers=headers)
-        return r.json().get("choices")[0].get("message").get("content")
+        try:
+            return r.json().get("choices")[0].get("message").get("content")
+        except:
+            print(r.json())
+            return r.json().get("choices")
         
 
 
