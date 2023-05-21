@@ -1,4 +1,3 @@
-import React from "react"
 import './FooterSyles.css'
 import {FaFacebook, FaInstagram, FaMailBulk, FaPhone, FaSearchLocation, FaTwitter} from 'react-icons/fa'
 function Footer(){

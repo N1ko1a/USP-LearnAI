@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import './PopupStyles.css'
 import '../routes/LoginRegisterStyles.css'
-import Cookies from 'universal-cookie';
 import jwt_decode from "jwt-decode";
 
 function Popup(props: {
@@ -22,8 +21,8 @@ function Popup(props: {
     fetch('http://localhost:8000/auth/login', requestOptions)
       .then(response => response.json())
       .then(data => {
-        let decoded_jwt = jwt_decode(data.json)
-        let expire = decoded_jwt['expire']
+        const decoded_jwt = jwt_decode(data.json)
+        const expire = decoded_jwt['expire']
         document.cookie = 'jwt' + " = " + JSON.stringify(data) + "; expires = " + new Date(expire * 1000 + 100000) + "SameSite=None";
         setIsLoginSuccessful(true);
       });

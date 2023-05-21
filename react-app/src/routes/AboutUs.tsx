@@ -1,4 +1,3 @@
-import React from 'react'
 import './AboutUsStyles.css'
 import AOS from 'aos'
 import 'aos/dist/aos.css'

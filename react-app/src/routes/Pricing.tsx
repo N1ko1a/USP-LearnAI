@@ -1,4 +1,4 @@
-import React, {useState,useEffect} from 'react'
+import {useState,useEffect} from 'react'
 import './PricingStyles.css'
 
 import Popup1 from '../components/Popup1';

@@ -10,7 +10,7 @@ let jwt = cookies.get('jwt')
 let user_id = ''
 if(jwt){
   jwt = jwt.json
-  let decoded_jwt = jwt_decode(jwt)
+  const decoded_jwt = jwt_decode(jwt)
   user_id = decoded_jwt['_id']
 }
 
