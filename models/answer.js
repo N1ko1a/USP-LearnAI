@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const AnswerSchema = mongoose.Schema({
     answer: {type: String, required: true},
-    prompt_id: {type: mongoose.Schema.Types.ObjectId, ref:"prompt", unique: true},
+    prompt_id: {type: mongoose.Schema.Types.ObjectId, ref:"prompt"},
     user_id: {type: mongoose.Schema.Types.ObjectId, ref:"user"}
 })
 
