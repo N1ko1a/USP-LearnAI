@@ -78,11 +78,11 @@ function ChatGPT() {
   }
   
 
-  let nesto = "";
+  let nesto = '';
   for (let i = 0; i < previousPrompts.length; i++) {
-    nesto +=  previousPrompts[i].prompt + "                                              ";
+    nesto +="You: "+  previousPrompts[i].prompt + "                                              ";
     if (previousAnswers[i]) {
-      nesto += "\r\nLearnGPT:" + previousAnswers[i].answer + "                                         ";
+      nesto += "LearnGPT: " + previousAnswers[i].answer + "                                         ";
     }
   }
 
@@ -102,7 +102,7 @@ function ChatGPT() {
             {isLoading ? (
               <p>Loading...</p>
             ) : (
-              <p>{nesto}</p>
+              <div style={{color:'#fefefe',width:'60%',textAlign:'center',margin:'auto'}}>{nesto}</div>
             )}
             {output.map((item, index) => (
               <li key={index}>{item}</li>
