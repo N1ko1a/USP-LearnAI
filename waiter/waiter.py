@@ -14,8 +14,9 @@ client = pymongo.MongoClient("localhost", 27017, maxPoolSize=50)
 db = client["GPTDB"]
 collection = db['prompts']
 cursor = collection.find()
-prompt_list = []
-answer_list = []
+#prompt_list = []
+#answer_list = []
+'''
 for document in cursor:
     prompt_list.append(document['prompt'])
 collection = db['answers']
@@ -24,7 +25,9 @@ for document in cursor:
     answer_list.append(document['answer'])
 for i, prompt in enumerate(prompt_list):
     context += "\r\n ME: " + prompt + "\n" + "\r\nLearnGPT: " + answer_list[i] + "\n"
-
+'''
+global num
+num = 0
 @app.route('/', methods=['POST'])
 def handle_post():
     data = request.get_json()  # Get the JSON data from the request
@@ -32,9 +35,13 @@ def handle_post():
     # You can access specific fields of the JSON data using data['field_name']
     waiter = Waiter()
     global context
-    context += " " + data['prompt'] + "\n"
-    r = waiter.request(context)
-    print(context)
+    global num
+    if num == 0:
+        context += " " + data['prompt'] + "\n"
+        r = waiter.request(context)
+        #print(context)
+    r = waiter.request(data['prompt'])
+    num+=1
     # Return a response
     response = {'message': 'POST request received', 'data': r}
     return response, 200
