@@ -7,7 +7,9 @@ import Cookies from 'universal-cookie';
 import jwt_decode from "jwt-decode";
 
 const cookies = new Cookies();
-
+const jwt = cookies.get('jwt').json;
+const decoded_jwt = jwt_decode(jwt);
+const user_id = decoded_jwt['_id'];
 function ChatGPT() {
   const [isLoading, setIsLoading] = useState(true);
   const [previousPrompts, setPreviousPrompts] = useState([]);
@@ -20,12 +22,9 @@ function ChatGPT() {
   }, []);
 
   const fetchData = async () => {
-    const jwt = cookies.get('jwt').json;
     if (!jwt) return;
 
     try {
-      const decoded_jwt = jwt_decode(jwt);
-      const user_id = decoded_jwt['_id'];
 
       const requestOptions = {
         method: 'GET',
@@ -55,9 +54,6 @@ function ChatGPT() {
 
     setOutput([...output, text]);
     setText('');
-
-    const jwt = cookies.get('jwt').json;
-    if (!jwt) return;
 
     const requestOptions = {
       method: 'POST',
