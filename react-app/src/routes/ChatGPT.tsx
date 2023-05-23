@@ -20,7 +20,7 @@ function ChatGPT() {
   }, []);
 
   const fetchData = async () => {
-    const jwt = cookies.get('jwt');
+    const jwt = cookies.get('jwt').json;
     if (!jwt) return;
 
     try {
@@ -56,7 +56,7 @@ function ChatGPT() {
     setOutput([...output, text]);
     setText('');
 
-    const jwt = cookies.get('jwt');
+    const jwt = cookies.get('jwt').json;
     if (!jwt) return;
 
     const requestOptions = {
