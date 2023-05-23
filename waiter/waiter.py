@@ -8,8 +8,6 @@ from flask import Flask, request
 app = Flask(__name__)
 CORS(app)
 
-global context
-context = "ME:Pretend you're an enthusiastic english teacher. Do not break character or speak in any other language than english. Correct my grammar mistakes and talk with me about things, and freely ask any questions.\n ChatGPT:Ok.\n"
 client = pymongo.MongoClient("localhost", 27017, maxPoolSize=50)
 db = client["GPTDB"]
 collection = db['prompts']
@@ -26,22 +24,14 @@ for document in cursor:
 for i, prompt in enumerate(prompt_list):
     context += "\r\n ME: " + prompt + "\n" + "\r\nLearnGPT: " + answer_list[i] + "\n"
 '''
-global num
-num = 0
 @app.route('/', methods=['POST'])
 def handle_post():
     data = request.get_json()  # Get the JSON data from the request
     # Process the data or perform any necessary actions
     # You can access specific fields of the JSON data using data['field_name']
     waiter = Waiter()
-    global context
-    global num
-    if num == 0:
-        context += " " + data['prompt'] + "\n"
-        r = waiter.request(context)
-        #print(context)
-    r = waiter.request(data['prompt'])
-    num+=1
+    context = "ME:Pretend you're an enthusiastic english teacher. Do not break character or speak in any other language than english. Correct my grammar mistakes and talk with me about things, and freely ask any questions.\n ChatGPT:Ok.\n"
+    r = waiter.request(context + " " + data['prompt'] + "\n")
     # Return a response
     response = {'message': 'POST request received', 'data': r}
     return response, 200
