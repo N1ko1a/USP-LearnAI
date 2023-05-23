@@ -10,39 +10,51 @@ const cookies = new Cookies();
 const jwt = cookies.get('jwt').json;
 const decoded_jwt = jwt_decode(jwt);
 const user_id = decoded_jwt['_id'];
+
 function ChatGPT() {
   const [isLoading, setIsLoading] = useState(true);
   const [previousPrompts, setPreviousPrompts] = useState([]);
   const [previousAnswers, setPreviousAnswers] = useState([]);
   const [text, setText] = useState('');
   const [output, setOutput] = useState<string[]>([]);
-
-  useEffect(() => {
-    fetchData();
-  }, []);
+  
 
   const fetchData = async () => {
-    if (!jwt) return;
-
     try {
+      if (!jwt) return;
 
-      const requestOptions = {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${jwt}` }
-      };
-
-      const promptResponse = await fetch(`http://localhost:8000/prompt/user/${user_id}`, requestOptions);
-      const promptData = await promptResponse.json();
-      setPreviousPrompts(promptData);
-
-      const answerResponse = await fetch(`http://localhost:8000/answer/user/${user_id}`, requestOptions);
-      const answerData = await answerResponse.json();
-      setPreviousAnswers(answerData);
+      await fetchPreviousPrompts(jwt, user_id);
+      await fetchPreviousAnswers(jwt, user_id);
 
       setIsLoading(false);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchPreviousPrompts = async (jwt, user_id) => {
+    const requestOptions = {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${jwt}` }
+    };
+
+    const promptResponse = await fetch(`http://localhost:8000/prompt/user/${user_id}`, requestOptions);
+    const promptData = await promptResponse.json();
+    setPreviousPrompts(promptData);
+  };
+
+  const fetchPreviousAnswers = async (jwt, user_id) => {
+    const requestOptions = {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${jwt}` }
+    };
+
+    const answerResponse = await fetch(`http://localhost:8000/answer/user/${user_id}`, requestOptions);
+    const answerData = await answerResponse.json();
+    setPreviousAnswers(answerData);
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,39 +67,53 @@ function ChatGPT() {
     setOutput([...output, text]);
     setText('');
 
+    if (!jwt) return;
+
+    savePrompt(jwt, text);
+    sendPromptToPython(text);
+  };
+
+  const savePrompt = (jwt, prompt) => {
     const requestOptions = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${jwt}` },
-      body: JSON.stringify({ user_id, prompt: text, conversation_id: 1 })
+      body: JSON.stringify({ user_id, prompt, conversation_id: 1 })
     };
 
     fetch('http://localhost:8000/prompt', requestOptions)
       .then(response => console.log(response))
       .catch(error => console.error('Error saving prompt:', error));
+  };
 
-    const requestOptions1 = {
+  const sendPromptToPython = (prompt) => {
+    const requestOptions = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: text })
+      body: JSON.stringify({ prompt })
     };
 
-    fetch('http://localhost:5000', requestOptions1)
+    fetch('http://localhost:5000', requestOptions)
       .then(response => response.json())
       .then(data => {
         setOutput([...output, "\r\n LearnGPT: " + data.data]);
-
-        const requestOptions2 = {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${jwt}` },
-          body: JSON.stringify({ answer: data.data, user_id })
-        };
-
-        fetch('http://localhost:8000/answer', requestOptions2)
-          .then(response => response.json())
-          .catch(error => console.error('Error saving answer:', error));
+        saveAnswer(data.data);
       })
       .catch(error => console.error('Error fetching data from Python script:', error));
-  }
+  };
+
+  const saveAnswer = (answer) => {
+    if (!jwt) return;
+
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${jwt}` },
+      body: JSON.stringify({ answer, user_id })
+    };
+
+    fetch('http://localhost:8000/answer', requestOptions)
+      .then(response => response.json())
+      .catch(error => console.error('Error saving answer:', error));
+  };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
