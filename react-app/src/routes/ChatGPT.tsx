@@ -7,7 +7,10 @@ import Cookies from 'universal-cookie';
 import jwt_decode from "jwt-decode";
 
 const cookies = new Cookies();
-const jwt = cookies.get('jwt').json;
+let jwt = '';
+if(cookies.get('jwt')) {
+  jwt = cookies.get('jwt').json;
+}
 const decoded_jwt = jwt_decode(jwt);
 const user_id = decoded_jwt['_id'];
 
