@@ -8,11 +8,12 @@ import jwt_decode from "jwt-decode";
 
 const cookies = new Cookies();
 let jwt = '';
+let user_id = '';
 if(cookies.get('jwt')) {
   jwt = cookies.get('jwt').json;
   
   const decoded_jwt = jwt_decode(jwt);
-  const user_id = decoded_jwt['_id'];
+  user_id = decoded_jwt['_id'];
 }
 
 function ChatGPT() {
