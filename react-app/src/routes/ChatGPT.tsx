@@ -8,7 +8,7 @@ import jwt_decode from "jwt-decode";
 
 const cookies = new Cookies();
 let jwt = '';
-if(cookies.get('jwt')) {
+if(document.cookie.match(/^(.*;)?\s*MyCookie\s*=\s*[^;]+(.*)?$/)) {
   jwt = cookies.get('jwt').json;
 }
 const decoded_jwt = jwt_decode(jwt);
