@@ -74,18 +74,19 @@ function ChatGPT() {
     setText(event.target.value);
   };
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-
+  
     if (!text) return; // Check if input prompt is empty
-
-    setOutput([...output, `You: ${text}`]);
+  
+    const userMessage = `You: ${text}`;
+    setOutput([...output, userMessage]);
     setText('');
-
+  
     if (!jwt) return;
-
+  
     savePrompt(jwt, text);
-    sendPromptToPython(text);
+    await sendPromptToPython(text);
   };
 
   const savePrompt = (jwt, prompt) => {
@@ -100,20 +101,23 @@ function ChatGPT() {
       .catch((error) => console.error('Error saving prompt:', error));
   };
 
-  const sendPromptToPython = (prompt) => {
+  const sendPromptToPython = async (prompt) => {
     const requestOptions = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt }),
     };
-
-    fetch('http://localhost:5000', requestOptions)
-      .then((response) => response.json())
-      .then((data) => {
-        setOutput([...output, `\r\n LearnGPT: ${data.data}`]);
-        saveAnswer(data.data);
-      })
-      .catch((error) => console.error('Error fetching data from Python script:', error));
+  
+    try {
+      const response = await fetch('http://localhost:5000', requestOptions);
+      const data = await response.json();
+      const serverResponse = `\r\n LearnGPT: ${data.data}`;
+  
+      setOutput((prevOutput) => [...prevOutput, serverResponse]); // Use functional update to prevent overwriting
+      saveAnswer(data.data);
+    } catch (error) {
+      console.error('Error fetching data from Python script:', error);
+    }
   };
 
   const saveAnswer = (answer) => {
@@ -130,19 +134,20 @@ function ChatGPT() {
       .catch((error) => console.error('Error saving answer:', error));
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = async (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       event.preventDefault();
-
+  
       if (!text) return; // Check if input prompt is empty
-
-      setOutput([...output, `You: ${text}`]);
+  
+      const userMessage = `You: ${text}`;
+      setOutput([...output, userMessage]);
       setText('');
-
+  
       if (!jwt) return;
-
+  
       savePrompt(jwt, text);
-      sendPromptToPython(text);
+      await sendPromptToPython(text);
     }
   };
 
