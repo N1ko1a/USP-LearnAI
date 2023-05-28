@@ -21,8 +21,7 @@
     "react-dom": "^18.2.0",
     "react-icons": "^4.8.0",
     "react-router-dom": "^6.11.2",
-    "react-scroll": "^1.8.9",
-    "universal-cookie": "^4.0.4"
+    "react-scroll": "^1.8.9"
   },
   "eslintConfig": {
     "extends": [

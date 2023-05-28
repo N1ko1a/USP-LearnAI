@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import './ChatGPTStyles.css'
+import './ChatGPTStyles.css';
 import Navbar1 from '../components/Navbar1';
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
 import Cookies from 'universal-cookie';
-import jwt_decode from "jwt-decode";
+import jwt_decode from 'jwt-decode';
 
 const cookies = new Cookies();
 let jwt = '';
 let user_id = '';
-if(cookies.get('jwt')) {
+if (cookies.get('jwt')) {
   jwt = cookies.get('jwt').json;
-  
+
   const decoded_jwt = jwt_decode(jwt);
   user_id = decoded_jwt['_id'];
 }
@@ -22,7 +22,6 @@ function ChatGPT() {
   const [previousAnswers, setPreviousAnswers] = useState([]);
   const [text, setText] = useState('');
   const [output, setOutput] = useState<string[]>([]);
-  
 
   const fetchData = async () => {
     try {
@@ -36,14 +35,23 @@ function ChatGPT() {
       console.error('Error fetching data:', error);
     }
   };
+
   useEffect(() => {
     fetchData();
+    const storedPrompts = localStorage.getItem('previousPrompts');
+    if (storedPrompts) {
+      setPreviousPrompts(JSON.parse(storedPrompts));
+    }
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('previousPrompts', JSON.stringify(previousPrompts));
+  }, [previousPrompts]);
 
   const fetchPreviousPrompts = async (jwt, user_id) => {
     const requestOptions = {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${jwt}` }
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt}` },
     };
 
     const promptResponse = await fetch(`http://localhost:8000/prompt/user/${user_id}`, requestOptions);
@@ -54,7 +62,7 @@ function ChatGPT() {
   const fetchPreviousAnswers = async (jwt, user_id) => {
     const requestOptions = {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${jwt}` }
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt}` },
     };
 
     const answerResponse = await fetch(`http://localhost:8000/answer/user/${user_id}`, requestOptions);
@@ -69,7 +77,9 @@ function ChatGPT() {
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    setOutput([...output, text]);
+    if (!text) return; // Check if input prompt is empty
+
+    setOutput([...output, `You: ${text}`]);
     setText('');
 
     if (!jwt) return;
@@ -81,29 +91,29 @@ function ChatGPT() {
   const savePrompt = (jwt, prompt) => {
     const requestOptions = {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${jwt}` },
-      body: JSON.stringify({ user_id, prompt, conversation_id: 1 })
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt}` },
+      body: JSON.stringify({ user_id, prompt, conversation_id: 1 }),
     };
 
     fetch('http://localhost:8000/prompt', requestOptions)
-      .then(response => console.log(response))
-      .catch(error => console.error('Error saving prompt:', error));
+      .then((response) => console.log(response))
+      .catch((error) => console.error('Error saving prompt:', error));
   };
 
   const sendPromptToPython = (prompt) => {
     const requestOptions = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt })
+      body: JSON.stringify({ prompt }),
     };
 
     fetch('http://localhost:5000', requestOptions)
-      .then(response => response.json())
-      .then(data => {
-        setOutput([...output, "\r\n LearnGPT: " + data.data]);
+      .then((response) => response.json())
+      .then((data) => {
+        setOutput([...output, `\r\n LearnGPT: ${data.data}`]);
         saveAnswer(data.data);
       })
-      .catch(error => console.error('Error fetching data from Python script:', error));
+      .catch((error) => console.error('Error fetching data from Python script:', error));
   };
 
   const saveAnswer = (answer) => {
@@ -111,56 +121,83 @@ function ChatGPT() {
 
     const requestOptions = {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${jwt}` },
-      body: JSON.stringify({ answer, user_id })
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt}` },
+      body: JSON.stringify({ answer, user_id }),
     };
 
     fetch('http://localhost:8000/answer', requestOptions)
-      .then(response => response.json())
-      .catch(error => console.error('Error saving answer:', error));
+      .then((response) => response.json())
+      .catch((error) => console.error('Error saving answer:', error));
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      setOutput([...output, text]);
+      event.preventDefault();
+
+      if (!text) return; // Check if input prompt is empty
+
+      setOutput([...output, `You: ${text}`]);
       setText('');
+
+      if (!jwt) return;
+
+      savePrompt(jwt, text);
+      sendPromptToPython(text);
     }
   };
 
   const generateOutputText = () => {
-    let outputText = '';
+    const outputItems = [];
 
     for (let i = 0; i < previousPrompts.length; i++) {
-      outputText += `You: ${previousPrompts[i].prompt}                                              `;
-      if (previousAnswers[i]) {
-        outputText += `LearnGPT: ${previousAnswers[i].answer}                                         `;
-      }
+      outputItems.push(
+        <div className="output-item" key={i}>
+          <div className="prompt">
+            <span className="user">You:</span> {previousPrompts[i].prompt}
+          </div>
+          {previousAnswers[i] && (
+            <div className="answer">
+              <span className="bot">LearnGPT:</span> {previousAnswers[i].answer}
+            </div>
+          )}
+        </div>
+      );
     }
 
-    return outputText;
+    return outputItems;
   };
 
   const outputText = generateOutputText();
 
   return (
-    <div>
+    <div className="oba">
       <Navbar1 />
-      <div className='bouth'>
-        <div className='output-text'>
-          <ul>
+      <div className="container">
+        <div className="output-text">
+          <div className="output-container">
             {isLoading ? (
               <p>Loading...</p>
             ) : (
-                <div style={{ color: '#fefefe', width: '60%', textAlign: 'center', margin: 'auto' }}>{outputText}</div>
-              )}
-            {output.map((item, index) => (
-              <li key={index}>{item}</li>
-            ))}
-          </ul>
+              <div className="output-content">{outputText}</div>
+            )}
+            <ul className="output-list">
+              {output.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
+            </ul>
+          </div>
         </div>
-        <div className='input-text'>
-          <input type="text" value={text} placeholder="Enter text and press Enter" onChange={handleChange} onKeyDown={handleKeyDown} />
-          <Button variant="contained" endIcon={<SendIcon />} onClick={handleClick}>SEND</Button>
+        <div className="input-text">
+          <input
+            type="text"
+            value={text}
+            placeholder="Enter text and press Enter"
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+          />
+          <Button variant="contained" endIcon={<SendIcon />} onClick={handleClick}>
+            SEND
+          </Button>
         </div>
       </div>
     </div>
