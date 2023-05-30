@@ -5,7 +5,6 @@ import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
 import Cookies from 'universal-cookie';
 import jwt_decode from 'jwt-decode';
-import Popup from '../components/Popup'; // Import the Popup component for login form
 
 const cookies = new Cookies();
 let jwt = '';
@@ -16,13 +15,13 @@ if (cookies.get('jwt')) {
   const decoded_jwt = jwt_decode(jwt);
   user_id = decoded_jwt['_id'];
 }
+
 function ChatGPT() {
   const [isLoading, setIsLoading] = useState(true);
   const [previousPrompts, setPreviousPrompts] = useState([]);
   const [previousAnswers, setPreviousAnswers] = useState([]);
   const [text, setText] = useState('');
   const [output, setOutput] = useState<string[]>([]);
-  const [isLoggedIn, setIsLoggedIn] = useState(!!jwt); // Check if the user is logged in
 
   const fetchData = async () => {
     try {
@@ -179,42 +178,32 @@ function ChatGPT() {
     <div className="oba">
       <Navbar1 />
       <div className="container">
-        {!isLoggedIn && ( // Display the login message and button if not logged in
-          <div>
-            <p>You need to log in first.</p>
-            <Popup />
+        <div className="output-text">
+          <div className="output-container">
+            {isLoading ? (
+              <p>Loading...</p>
+            ) : (
+              <div className="output-content">{outputText}</div>
+            )}
+            <ul className="output-list">
+              {output.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
+            </ul>
           </div>
-        )}
-        {isLoggedIn && ( // Display the chat interface if logged in
-          <>
-            <div className="output-text">
-              <div className="output-container">
-                {isLoading ? (
-                  <p>Loading...</p>
-                ) : (
-                  <div className="output-content">{outputText}</div>
-                )}
-                <ul className="output-list">
-                  {output.map((item, index) => (
-                    <li key={index}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-            <div className="input-text">
-              <input
-                type="text"
-                value={text}
-                placeholder="Enter text and press Enter"
-                onChange={handleChange}
-                onKeyDown={handleKeyDown}
-              />
-              <Button variant="contained" endIcon={<SendIcon />} onClick={handleClick}>
-                SEND
-              </Button>
-            </div>
-          </>
-        )}
+        </div>
+        <div className="input-text">
+          <input
+            type="text"
+            value={text}
+            placeholder="Enter text and press Enter"
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+          />
+          <Button variant="contained" endIcon={<SendIcon />} onClick={handleClick}>
+            SEND
+          </Button>
+        </div>
       </div>
     </div>
   );
