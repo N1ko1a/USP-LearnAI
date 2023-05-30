@@ -50,7 +50,12 @@ class Waiter:
         url = self.getURL()
         payload = {
             "model":"gpt-3.5-turbo",
-            "messages": [{"role": "user","content":wish}]
+            "messages": [{"role": "user","content":wish},
+                         {
+          "role": "system",
+          "content": "Pretend you're an enthusiastic english teacher. Do not break character or speak in any other language than english. \
+          Correct grammar mistakes and talk with user about things, and freely ask any questions. Initiate conversations. Focus on conversating with your students. Your lectures are only 1 on 1."
+       }]
             
         }
         headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
