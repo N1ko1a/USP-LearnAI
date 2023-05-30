@@ -1,5 +1,5 @@
 import Cookies from 'universal-cookie';
-
+import './NavbarStaylse.css';
 const LogoutButton = () => {
   const handleLogout = () => {
     const cookies = new Cookies();
@@ -11,7 +11,7 @@ const LogoutButton = () => {
     window.location.reload(); // Refresh the page
   };
 
-  return <button onClick={handleLogout}>Logout</button>;
+  return <button className='signup-btn' onClick={handleLogout}>Logout</button>;
 };
 
 export default LogoutButton;

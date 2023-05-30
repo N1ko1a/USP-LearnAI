@@ -27,16 +27,22 @@ function Popup(props: {
         setIsLoginSuccessful(true);
       });
   };
+
+  const handleClosePopup = () => {
+    props.onClose?.();
+    window.location.reload(); // Refresh the page
+  };
+
   if (isLoginSuccessful) {
     return (
       <div className="popup">
-        <div className="popup-content">
+        <div className="popup-content-alert">
           <p>Login successful!</p>
-          <button className="popup-close-btn" onClick={props.onClose}>Close</button>
+          <button className="popup-close-btn-alert" onClick={handleClosePopup}>Close</button>
         </div>
       </div>
     );
-  }//THANKS CHATGPT
+  }
 
   return (
     <div className="popup">
@@ -51,7 +57,7 @@ function Popup(props: {
             <button type="submit">Log In</button>
           </form>
         </div>
-        <button className="popup-close-btn" onClick={props.onClose}>Close</button>
+        <button className="popup-close-btn" onClick={handleClosePopup}>Close</button>
       </div>
     </div>
   );
