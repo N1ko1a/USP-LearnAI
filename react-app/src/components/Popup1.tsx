@@ -5,7 +5,7 @@ function Popup1(props: { title: string | number | boolean | React.ReactElement<a
     const [email, setEmail] = useState('');
     const [pass, setPass] = useState('');
     const [name, setName] = useState('');
-
+    const [isRegisterSuccessful, setIsRegisterSuccessful] = useState(false);
     const handleSubmit = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
         const requestOptions = {
@@ -14,8 +14,27 @@ function Popup1(props: { title: string | number | boolean | React.ReactElement<a
             body: JSON.stringify({ email: email, name: name, password: pass })
         };
         fetch('http://localhost:8000/auth/register', requestOptions)
-            .then(response => console.log(response));
+            .then(response => console.log(response))
+            .then(data => {
+                setIsRegisterSuccessful(true);
+            });
     }
+    const handleClosePopup = () => {
+        props.onClose?.();
+        window.location.reload(); // Refresh the page
+    };
+
+    if (isRegisterSuccessful) {
+        return (
+          <div className="popup">
+            <div className="popup-content-alert">
+              <p>Register successful!</p>
+              <button className="popup-close-btn-alert" onClick={handleClosePopup}>Close</button>
+            </div>
+          </div>
+        );
+    }
+
     return(
         <div className="popup">
       <div className="popup-content">
@@ -32,7 +51,7 @@ function Popup1(props: { title: string | number | boolean | React.ReactElement<a
         </form>
        
     </div>
-    <button className="popup-close-btn" onClick={props.onClose}>Close</button>
+    <button className="popup-close-btn" onClick={handleClosePopup}>Close</button>
     </div>
     </div>
 

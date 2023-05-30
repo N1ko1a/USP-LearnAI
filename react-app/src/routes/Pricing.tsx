@@ -76,7 +76,7 @@ return (
           <li className="pricing-features-item">Faster response speed <br/> </li>
           <li className="pricing-features-item">Regular model<br/> updates</li>
         </ul>
-        <span className="pricing-price">$150</span>
+        <span className="pricing-price">$0</span>
         <div className='popupFormula'>
         <button  type='button'className="pricing-button" onClick={handleOpenPopup1}>Sign up</button>
         {showPopup1 && (
@@ -97,7 +97,7 @@ return (
           <li className="pricing-features-item">Faster response speed</li>
           <li className="pricing-features-item">Priority access to new features</li>
         </ul>
-        <span className="pricing-price">$400</span>
+        <span className="pricing-price">$0</span>
         <button  type='button'className="pricing-button" onClick={handleOpenPopup1}>Sign up</button>
         {showPopup1 && (
           <Popup1

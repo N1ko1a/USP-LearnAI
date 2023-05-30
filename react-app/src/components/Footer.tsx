@@ -23,7 +23,7 @@ function Footer(){
                 </div>
                 <div className="right">
                     <h4>About the company</h4>
-                    <p>LearnAI is an AI research and deployment company. Our mission is to ensure that artificial general intelligence benefits all of humanity.</p>
+                    <p>LearnAI is an AI research and deployment company. Our mission is to ensure that artificial intelligence benefits all of humanity.</p>
                     <div className="social">
                         <FaFacebook size={30} style = {{color: '#fff', marginRight: '1rem'}}/>
                         <FaInstagram size={30} style = {{color: '#fff', marginRight: '1rem'}}/>
