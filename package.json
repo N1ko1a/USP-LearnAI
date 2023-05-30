@@ -12,7 +12,6 @@
     "mongoose": "^6.11.1",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
-    "passport-local": "^1.0.0",
-    "universal-cookie": "^4.0.4"
+    "passport-local": "^1.0.0"
   }
 }
