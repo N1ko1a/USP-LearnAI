@@ -4,7 +4,7 @@ import LogoutButton from './LogoutButton';
 import { Link } from 'react-scroll';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import Popup from './Popup';
-import AuthCheck from './AuthCheck';
+import Cookies from 'universal-cookie';
 import Popup1 from './Popup1';
 
 function Navbar() {
@@ -12,8 +12,9 @@ function Navbar() {
   const handleClick = () => setClick(!click);
   const closeMenu = () => setClick(false);
   const [showPopup, setShowPopup] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  const cookies = new Cookies();
+  const isLoggedIn = !!cookies.get('jwt');
 
   const handleOpenPopup = () => {
     setShowPopup(true);
