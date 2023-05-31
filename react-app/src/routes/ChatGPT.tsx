@@ -1,11 +1,13 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import './ChatGPTStyles.css';
 import Navbar1 from '../components/Navbar1';
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
-import VolumeUpIcon from '@mui/icons-material/VolumeUp'; // Updated import
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import MicIcon from '@mui/icons-material/Mic'; // Import the MicIcon
 import Cookies from 'universal-cookie';
 import jwt_decode from 'jwt-decode';
+
 
 const cookies = new Cookies();
 let jwt = '';
@@ -26,6 +28,9 @@ function ChatGPT() {
   const [isTextToSpeechEnabled, setIsTextToSpeechEnabled] = useState(false);
   const latestOutputRef = useRef<string[]>([]);
   const lastReadIndexRef = useRef(0); // Ref to keep track of the last read index
+  const [isSpeechToTextEnabled, setIsSpeechToTextEnabled] = useState(false); // New state variable for speech-to-text
+const recognitionRef = useRef(null); // Ref to hold the SpeechRecognition instance
+
 
   const fetchData = async () => {
     try {
@@ -39,6 +44,37 @@ function ChatGPT() {
       console.error('Error fetching data:', error);
     }
   };
+  useEffect(() => {
+    // Check if SpeechRecognition is available in the browser
+    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true; // Enable continuous listening
+  
+      recognition.onresult = (event) => {
+        const last = event.results.length - 1;
+        const result = event.results[last][0].transcript;
+  
+        setText(result);
+        handleClick(); // Trigger the send action automatically
+  
+        // Stop the recognition after processing one result
+        recognition.stop();
+      };
+  
+      recognitionRef.current = recognition;
+    }
+  }, []);
+  
+  const handleSpeechToTextToggle = () => {
+    if (isSpeechToTextEnabled) {
+      recognitionRef.current.stop(); // Stop the speech recognition
+    } else {
+      recognitionRef.current.start(); // Start the speech recognition
+    }
+    setIsSpeechToTextEnabled((prevIsSpeechToTextEnabled) => !prevIsSpeechToTextEnabled);
+  };
+  
 
   useEffect(() => {
     fetchData();
@@ -103,31 +139,24 @@ function ChatGPT() {
 
   const handleTextToSpeech = () => {
     if (output.length === 0) return;
-  
+
     const latestOutput = latestOutputRef.current;
     const startIndex = lastReadIndexRef.current; // Start from the last read index
     const endIndex = latestOutput.length;
-  
+
     const utterances = [];
-  
+
     for (let i = startIndex; i < endIndex; i++) {
       const utterance = new SpeechSynthesisUtterance(latestOutput[i]);
       utterances.push(utterance);
     }
-  
+
     utterances.forEach((utterance) => {
       speechSynthesis.speak(utterance);
     });
-  
+
     lastReadIndexRef.current = endIndex; // Update the last read index
-  
-    // Stop speech synthesis immediately when "Disable" button is clicked
-    if (!isTextToSpeechEnabled) {
-      speechSynthesis.cancel();
-      lastReadIndexRef.current = 0; // Reset the last read index
-    }
   };
-  
 
   const savePrompt = (jwt, prompt) => {
     const requestOptions = {
@@ -215,8 +244,13 @@ function ChatGPT() {
   const outputText = generateOutputText();
 
   const handleTextToSpeechToggle = () => {
+    if (isTextToSpeechEnabled) {
+      speechSynthesis.cancel();
+      lastReadIndexRef.current = 0; // Reset the last read index
+    }
     setIsTextToSpeechEnabled((prevIsTextToSpeechEnabled) => !prevIsTextToSpeechEnabled);
   };
+
 
   return (
     <div className="oba">
@@ -250,6 +284,10 @@ function ChatGPT() {
           <Button variant="contained" endIcon={<VolumeUpIcon />} onClick={handleTextToSpeechToggle}>
             {isTextToSpeechEnabled ? 'Disable' : 'Enable'} Text to Speech
           </Button>
+          <Button variant="contained" endIcon={<MicIcon />} onClick={handleSpeechToTextToggle}>
+          {isSpeechToTextEnabled ? 'Disable' : 'Enable'} Speech to Text
+          </Button>
+
         </div>
       </div>
     </div>
