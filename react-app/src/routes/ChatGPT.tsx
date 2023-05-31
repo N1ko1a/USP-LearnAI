@@ -29,7 +29,7 @@ function ChatGPT() {
   const latestOutputRef = useRef<string[]>([]);
   const lastReadIndexRef = useRef(0); // Ref to keep track of the last read index
   const [isSpeechToTextEnabled, setIsSpeechToTextEnabled] = useState(false); // New state variable for speech-to-text
-const recognitionRef = useRef(null); // Ref to hold the SpeechRecognition instance
+  const recognitionRef = useRef(null); // Ref to hold the SpeechRecognition instance
 
 
   const fetchData = async () => {
