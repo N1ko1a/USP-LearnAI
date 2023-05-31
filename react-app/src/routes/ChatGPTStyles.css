@@ -92,9 +92,9 @@
   }
   
   .input-text button {
-    width: 10%;
+    width: 20%;
     padding: 12px 32px;
-    font-size: 1.2rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
     background: transparent;
     border-radius: 10px;

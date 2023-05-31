@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import './ChatGPTStyles.css';
 import Navbar1 from '../components/Navbar1';
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp'; // Updated import
 import Cookies from 'universal-cookie';
 import jwt_decode from 'jwt-decode';
 
@@ -22,6 +23,9 @@ function ChatGPT() {
   const [previousAnswers, setPreviousAnswers] = useState([]);
   const [text, setText] = useState('');
   const [output, setOutput] = useState<string[]>([]);
+  const [isTextToSpeechEnabled, setIsTextToSpeechEnabled] = useState(false);
+  const latestOutputRef = useRef<string[]>([]);
+  const lastReadIndexRef = useRef(0); // Ref to keep track of the last read index
 
   const fetchData = async () => {
     try {
@@ -48,6 +52,13 @@ function ChatGPT() {
     localStorage.setItem('previousPrompts', JSON.stringify(previousPrompts));
   }, [previousPrompts]);
 
+  useEffect(() => {
+    latestOutputRef.current = output;
+    if (isTextToSpeechEnabled) {
+      handleTextToSpeech();
+    }
+  }, [output, isTextToSpeechEnabled]);
+
   const fetchPreviousPrompts = async (jwt, user_id) => {
     const requestOptions = {
       method: 'GET',
@@ -70,24 +81,53 @@ function ChatGPT() {
     setPreviousAnswers(answerData);
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (event) => {
     setText(event.target.value);
   };
 
   const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-  
+
     if (!text) return; // Check if input prompt is empty
-  
+
     const userMessage = `You: ${text}`;
+
     setOutput([...output, userMessage]);
     setText('');
-  
+
     if (!jwt) return;
-  
+
     savePrompt(jwt, text);
     await sendPromptToPython(text);
   };
+
+  const handleTextToSpeech = () => {
+    if (output.length === 0) return;
+  
+    const latestOutput = latestOutputRef.current;
+    const startIndex = lastReadIndexRef.current; // Start from the last read index
+    const endIndex = latestOutput.length;
+  
+    const utterances = [];
+  
+    for (let i = startIndex; i < endIndex; i++) {
+      const utterance = new SpeechSynthesisUtterance(latestOutput[i]);
+      utterances.push(utterance);
+    }
+  
+    utterances.forEach((utterance) => {
+      speechSynthesis.speak(utterance);
+    });
+  
+    lastReadIndexRef.current = endIndex; // Update the last read index
+  
+    // Stop speech synthesis immediately when "Disable" button is clicked
+    if (!isTextToSpeechEnabled) {
+      speechSynthesis.cancel();
+      lastReadIndexRef.current = 0; // Reset the last read index
+    }
+  };
+  
 
   const savePrompt = (jwt, prompt) => {
     const requestOptions = {
@@ -107,12 +147,12 @@ function ChatGPT() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt }),
     };
-  
+
     try {
       const response = await fetch('http://localhost:5000', requestOptions);
       const data = await response.json();
-      const serverResponse = `\r\n LearnGPT: ${data.data}`;
-  
+      const serverResponse = `\r\nLearnGPT: ${data.data}`;
+
       setOutput((prevOutput) => [...prevOutput, serverResponse]); // Use functional update to prevent overwriting
       saveAnswer(data.data);
     } catch (error) {
@@ -134,18 +174,18 @@ function ChatGPT() {
       .catch((error) => console.error('Error saving answer:', error));
   };
 
-  const handleKeyDown = async (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = async (event) => {
     if (event.key === 'Enter') {
       event.preventDefault();
-  
+
       if (!text) return; // Check if input prompt is empty
-  
+
       const userMessage = `You: ${text}`;
       setOutput([...output, userMessage]);
       setText('');
-  
+
       if (!jwt) return;
-  
+
       savePrompt(jwt, text);
       await sendPromptToPython(text);
     }
@@ -174,6 +214,10 @@ function ChatGPT() {
 
   const outputText = generateOutputText();
 
+  const handleTextToSpeechToggle = () => {
+    setIsTextToSpeechEnabled((prevIsTextToSpeechEnabled) => !prevIsTextToSpeechEnabled);
+  };
+
   return (
     <div className="oba">
       <Navbar1 />
@@ -200,8 +244,11 @@ function ChatGPT() {
             onChange={handleChange}
             onKeyDown={handleKeyDown}
           />
-          <Button variant="contained" endIcon={<SendIcon />} onClick={handleClick}>
-            SEND
+          {/* <Button variant="contained" endIcon={<SendIcon />} onClick={handleClick}>
+            Send
+          </Button> */}
+          <Button variant="contained" endIcon={<VolumeUpIcon />} onClick={handleTextToSpeechToggle}>
+            {isTextToSpeechEnabled ? 'Disable' : 'Enable'} Text to Speech
           </Button>
         </div>
       </div>
