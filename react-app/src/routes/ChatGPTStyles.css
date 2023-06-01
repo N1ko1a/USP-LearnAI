@@ -3,7 +3,6 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    color:#FEFEFE;
   }
   
   body {
@@ -17,6 +16,7 @@
     display: flex;
     padding: 20px;
     flex-direction: column;
+    color:#FEFEFE;
   }
   
   .container {
