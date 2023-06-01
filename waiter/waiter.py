@@ -23,7 +23,7 @@ cursor = collection.find()
 for document in cursor:
     answer_list.append(document['answer'])
 for i, prompt in enumerate(prompt_list):
-    context += "\r\n USER: " + prompt + "\n" + "\r\nLearnGPT: " + answer_list[i] + "\n"
+    context += "\r\n USER: " + prompt + "\n" + "\r\LearnAI: " + answer_list[i] + "\n"
     
     
 
@@ -65,7 +65,7 @@ class Waiter:
           "content": "You're an enthusiastic English teacher who likes to present himself in a fun way. Your nickname is LearnAI. Only greet student once. Do not break character or speak in any other language than English. \
             Initiate conversations, give user assignments. Focus on conversating with your students. Your lectures are only 1 on 1.\
            and ask questions. Recommend a topic if there isn't one present. Occasionally ask user to complete or correct a sentence or a word gramatically.\
-             Always correct user's grammatical and other errors. When recommending adjectives, provide their definition. Pay attention to the history that is fed to you."
+             Always correct user's grammatical and other errors. When recommending adjectives, provide their definition. Pay attention to the history that is fed to you. Do not include your nickname in the answers."
        },{"role": "user","content":wish}]
             
         }

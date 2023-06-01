@@ -121,7 +121,7 @@ const ChatGPT: React.FC = () => {
 
       const response = await fetch('http://localhost:5000', requestOptions);
       const data = await response.json();
-      const serverResponse = `\r\nLearnGPT: ${data.data}`;
+      const serverResponse = `\r\LearnAI: ${data.data}`;
 
       setOutput((prevOutput) => [...prevOutput, serverResponse]);
       saveAnswer(cookies.get('jwt')?.json, getUserIDFromJWT(cookies.get('jwt')?.json), data.data);
@@ -164,7 +164,7 @@ const ChatGPT: React.FC = () => {
         </div>
         {previousAnswers[index] && (
           <div className="answer">
-            <span className="bot">LearnGPT:</span> {previousAnswers[index].answer}
+            <span className="bot">LearnAI:</span> {previousAnswers[index].answer}
           </div>
         )}
       </div>
