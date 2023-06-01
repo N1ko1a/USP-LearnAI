@@ -38,8 +38,9 @@ def handle_post():
     # You can access specific fields of the JSON data using data['field_name']
     waiter = Waiter()
     global context
-    print(context)
-    r = waiter.request(context + "\n" + data['prompt'] + "\n")
+    context += context + "\n" + "USER: " + data['prompt'] + "\n"
+    r = waiter.request(context)
+    context += context + "\r\nLearnGPT: " + r + "\n"
     # Return a response
     response = {'message': 'POST request received', 'data': r}
     return response, 200
