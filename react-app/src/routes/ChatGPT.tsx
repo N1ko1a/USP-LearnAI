@@ -18,8 +18,8 @@ if (cookies.get('jwt')) {
 
 const ChatGPT = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [previousPrompts, setPreviousPrompts] = useState<string[]>([]);
-  const [previousAnswers, setPreviousAnswers] = useState<string[]>([]);
+  const [previousPrompts, setPreviousPrompts] = useState<{ prompt: string }[]>([]);
+  const [previousAnswers, setPreviousAnswers] = useState<{ answer: string }[]>([]);
   const [text, setText] = useState('');
   const [output, setOutput] = useState<string[]>([]);
   const [isTextToSpeechEnabled, setIsTextToSpeechEnabled] = useState(false);
@@ -27,6 +27,7 @@ const ChatGPT = () => {
   const lastReadIndexRef = useRef(0);
   const [isSpeechToTextEnabled, setIsSpeechToTextEnabled] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const [isDataFetched, setIsDataFetched] = useState(false);
   
   useEffect(() => {
     fetchData();
@@ -75,6 +76,7 @@ const ChatGPT = () => {
 
       setPreviousPrompts(prompts);
       setPreviousAnswers(answers);
+      setIsDataFetched(true); // Update the state to indicate that data is fetched
       setIsLoading(false);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -170,7 +172,7 @@ const ChatGPT = () => {
   };
   
 
-  const outputText = generateOutputText();
+  const outputText = isDataFetched ? generateOutputText() : null;
 
   const handleTextToSpeechToggle = () => {
     if (isTextToSpeechEnabled) {
