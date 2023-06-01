@@ -21,7 +21,7 @@ function AboutUs(){
                 <p>Our AI-powered language learning platform offers an interactive and engaging way for users
                 to improve their English skills. Through cutting-edge technology and natural language processing, 
                 our platform provides personalized lessons and exercises that adapt to each user's unique learning style and level.
-                With ChatGPT as your virtual language tutor, you can enhance your English proficiency from the comfort of your own device, 
+                With LearnAI as your virtual language tutor, you can enhance your English proficiency from the comfort of your own device, 
                 anytime and anywhere.</p>
             </div>
             </div>
