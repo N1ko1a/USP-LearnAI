@@ -23,7 +23,7 @@ cursor = collection.find()
 for document in cursor:
     answer_list.append(document['answer'])
 for i, prompt in enumerate(prompt_list):
-    context += "\r\n USER: " + prompt + "\n" + "\r\LearnAI: " + answer_list[i] + "\n"
+    context += "\r\n USER: " + prompt + "\n" + "\r\nLearnAI: " + answer_list[i] + "\n"
     
     
 
@@ -40,7 +40,7 @@ def handle_post():
     global context
     context +=  "\n" + "USER: " + data['prompt'] + "\n"
     r = waiter.request(context)
-    context +=  "\r\nLearnGPT: " + r + "\n"
+    context +=  "\r\nLearnAI: " + r + "\n"
     # Return a response
     response = {'message': 'POST request received', 'data': r}
     return response, 200

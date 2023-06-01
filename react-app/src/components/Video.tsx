@@ -31,8 +31,8 @@ function Video() {
           <source src={spaceVideo} type='video/mp4' />
         </video>
         <div className='content'>
-          <h1>Introducing LearnGPT</h1>
-          <p>We’ve trained a model called LearnGPT which interacts in a conversational way and teaches you English.</p>
+          <h1>Introducing LearnAI</h1>
+          <p>We’ve trained a model called LearnAI which interacts in a conversational way and teaches you English.</p>
 
           <div>
             {isLoggedIn ? (
