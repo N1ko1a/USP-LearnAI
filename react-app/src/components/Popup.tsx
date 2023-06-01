@@ -19,18 +19,30 @@ function Popup(props: {
       body: JSON.stringify({ email: email, password: pass })
     };
     fetch('http://localhost:8000/auth/login', requestOptions)
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Login failed'); // Throw an error to handle the unsuccessful response
+        }
+        return response.json();
+      })
       .then(data => {
         const decoded_jwt = jwt_decode(data.json)
         const expire = decoded_jwt['expire']
         document.cookie = 'jwt' + " = " + JSON.stringify(data) + "; expires = " + new Date(expire * 1000 + 100000) + "SameSite=None";
         setIsLoginSuccessful(true);
+      })
+      .catch(error => {
+        console.log(error); // Handle the error appropriately (e.g., show an error message)
       });
   };
 
-  const handleClosePopup = () => {
-    props.onClose?.();
-    window.location.reload(); // Refresh the page
+  const handleClosePopup = (event: React.MouseEvent<HTMLButtonElement>, login: boolean) => {
+    event.preventDefault();
+    if (props.onClose) {
+      props.onClose(event);
+    }
+    if(login)
+      window.location.reload(); // Refresh the page
   };
 
   if (isLoginSuccessful) {
@@ -38,7 +50,7 @@ function Popup(props: {
       <div className="popup">
         <div className="popup-content-alert">
           <p>Login successful!</p>
-          <button className="popup-close-btn-alert" onClick={handleClosePopup}>Close</button>
+          <button className="popup-close-btn-alert" onClick={(event) => handleClosePopup(event, isLoginSuccessful)}>Close</button>
         </div>
       </div>
     );
@@ -57,7 +69,7 @@ function Popup(props: {
             <button type="submit">Log In</button>
           </form>
         </div>
-        <button className="popup-close-btn" onClick={handleClosePopup}>Close</button>
+        <button className="popup-close-btn" onClick={(event) => handleClosePopup(event, isLoginSuccessful)}>Close</button>
       </div>
     </div>
   );

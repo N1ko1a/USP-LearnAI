@@ -14,13 +14,25 @@ function Popup1(props: { title: string | number | boolean | React.ReactElement<a
             body: JSON.stringify({ email: email, name: name, password: pass })
         };
         fetch('http://localhost:8000/auth/register', requestOptions)
-            .then(response => console.log(response))
-            .then(data => {
-                setIsRegisterSuccessful(true);
-            });
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Registration failed'); // Throw an error to handle the unsuccessful response
+            }
+            return response;
+          })
+          .then(data => {
+              setIsRegisterSuccessful(true);
+          })
+          .catch(error => {
+            console.log(error); // Handle the error appropriately (e.g., show an error message)
+          });
     }
-    const handleClosePopup = () => {
-        props.onClose?.();
+    const handleClosePopup = (event: React.MouseEvent<HTMLButtonElement>, register: boolean) => {
+      event.preventDefault();
+      if (props.onClose) {
+        props.onClose(event);
+      }
+      if(register)
         window.location.reload(); // Refresh the page
     };
 
@@ -29,7 +41,7 @@ function Popup1(props: { title: string | number | boolean | React.ReactElement<a
           <div className="popup">
             <div className="popup-content-alert">
               <p>Register successful!</p>
-              <button className="popup-close-btn-alert" onClick={handleClosePopup}>Close</button>
+              <button className="popup-close-btn-alert" onClick={(event) => handleClosePopup(event, isRegisterSuccessful)}>Close</button>
             </div>
           </div>
         );
@@ -51,7 +63,7 @@ function Popup1(props: { title: string | number | boolean | React.ReactElement<a
         </form>
        
     </div>
-    <button className="popup-close-btn" onClick={handleClosePopup}>Close</button>
+    <button className="popup-close-btn" onClick={(event) => handleClosePopup(event, isRegisterSuccessful)}>Close</button>
     </div>
     </div>
 

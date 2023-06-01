@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import './VideoStyles.css';
 import { Link, useNavigate } from 'react-router-dom';
 import Cookies from 'universal-cookie';
