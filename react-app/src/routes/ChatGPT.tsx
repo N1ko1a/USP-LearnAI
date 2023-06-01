@@ -22,12 +22,6 @@ interface Answer {
 }
 
 const cookies = new Cookies();
-let jwt = '';
-let user_id = '';
-if (cookies.get('jwt')) {
-  jwt = cookies.get('jwt').json;
-  user_id = getUserIDFromJWT(jwt)
-}
 
 const ChatGPT: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -41,9 +35,14 @@ const ChatGPT: React.FC = () => {
   const [isDataFetched, setIsDataFetched] = useState(false);
   const lastReadIndexRef = useRef(0);
 
-
+  
   useEffect(() => {
-
+    const jwt = cookies.get('jwt')?.json;
+    if (!jwt) {
+      // Redirect to login page if token doesn't exist
+      window.location.href = "/";
+      return;
+    }
     fetchData();
     const storedPrompts = localStorage.getItem('previousPrompts');
     if (storedPrompts) {
@@ -79,30 +78,29 @@ const ChatGPT: React.FC = () => {
   }, [output, isTextToSpeechEnabled]);
 
   useEffect(() => {
-    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      const recognition = new SpeechRecognition();
-      recognition.continuous = true;
+    const initSpeechRecognition = () => {
+      if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.onresult = handleRecognitionResult;
+        recognitionRef.current = recognition;
+      }
+    };
 
-      recognition.onresult = (event) => {
-        const last = event.results.length - 1;
-        const result = event.results[last][0].transcript;
-
-        setText(result);
-        handleClick();
-        recognition.stop();
-      };
-
-      recognitionRef.current = recognition;
-    }
+    initSpeechRecognition();
   });
 
   const fetchData = async (): Promise<void> => {
     try {
+      const jwt = cookies.get('jwt')?.json;
       if (!jwt) return;
 
-      const prompts = await fetchPreviousPrompts(jwt, user_id);
-      const answers = await fetchPreviousAnswers(jwt, user_id);
+      const user_id = getUserIDFromJWT(jwt);
+      const [prompts, answers] = await Promise.all([
+        fetchPreviousPrompts(jwt, user_id),
+        fetchPreviousAnswers(jwt, user_id)
+      ]);
 
       setPreviousPrompts(prompts);
       setPreviousAnswers(answers);
@@ -126,7 +124,7 @@ const ChatGPT: React.FC = () => {
       const serverResponse = `\r\nLearnGPT: ${data.data}`;
 
       setOutput((prevOutput) => [...prevOutput, serverResponse]);
-      saveAnswer(jwt, user_id, data.data);
+      saveAnswer(cookies.get('jwt')?.json, getUserIDFromJWT(cookies.get('jwt')?.json), data.data);
     } catch (error) {
       console.error('Error fetching data from Python script:', error);
     }
@@ -136,34 +134,25 @@ const ChatGPT: React.FC = () => {
     setText(event.target.value);
   };
 
-  const handleClick = async () => {
+  const handleSubmit = async () => {
     if (!text) return;
 
     const userMessage = `You: ${text}`;
 
-    setOutput([...output, userMessage]);
+    setOutput((prevOutput) => [...prevOutput, userMessage]);
     setText('');
 
+    const jwt = cookies.get('jwt')?.json;
     if (!jwt) return;
 
-    await savePrompt(jwt, user_id, text);
+    await savePrompt(jwt, getUserIDFromJWT(jwt), text);
     await sendPromptToPython(text);
   };
 
-  const handleKeyDown = async (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       event.preventDefault();
-
-      if (!text) return;
-
-      const userMessage = `You: ${text}`;
-      setOutput([...output, userMessage]);
-      setText('');
-
-      if (!jwt) return;
-
-      await savePrompt(jwt, user_id, text);
-      await sendPromptToPython(text);
+      handleSubmit();
     }
   };
 
@@ -201,6 +190,15 @@ const ChatGPT: React.FC = () => {
       }
     }
     setIsSpeechToTextEnabled((prevIsSpeechToTextEnabled) => !prevIsSpeechToTextEnabled);
+  };
+
+  const handleRecognitionResult = (event: SpeechRecognitionEvent) => {
+    const last = event.results.length - 1;
+    const result = event.results[last][0].transcript;
+
+    setText(result);
+    handleSubmit();
+    recognitionRef.current?.stop();
   };
 
   return (
