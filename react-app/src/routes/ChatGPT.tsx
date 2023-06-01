@@ -1,12 +1,25 @@
-import { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import './ChatGPTStyles.css';
 import Navbar1 from '../components/Navbar1';
 import Button from '@mui/material/Button';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import MicIcon from '@mui/icons-material/Mic';
 import Cookies from 'universal-cookie';
-import { fetchPreviousPrompts, fetchPreviousAnswers, savePrompt, saveAnswer} from '../logic/api';
+import {
+  fetchPreviousPrompts,
+  fetchPreviousAnswers,
+  savePrompt,
+  saveAnswer
+} from '../logic/api';
 import { getUserIDFromJWT } from '../logic/utils';
+
+interface Prompt {
+  prompt: string;
+}
+
+interface Answer {
+  answer: string;
+}
 
 const cookies = new Cookies();
 let jwt = '';
@@ -16,20 +29,21 @@ if (cookies.get('jwt')) {
   user_id = getUserIDFromJWT(jwt)
 }
 
-const ChatGPT = () => {
+const ChatGPT: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [previousPrompts, setPreviousPrompts] = useState<{ prompt: string }[]>([]);
-  const [previousAnswers, setPreviousAnswers] = useState<{ answer: string }[]>([]);
+  const [previousPrompts, setPreviousPrompts] = useState<Prompt[]>([]);
+  const [previousAnswers, setPreviousAnswers] = useState<Answer[]>([]);
   const [text, setText] = useState('');
   const [output, setOutput] = useState<string[]>([]);
   const [isTextToSpeechEnabled, setIsTextToSpeechEnabled] = useState(false);
-  const latestOutputRef = useRef<string[]>([]);
-  const lastReadIndexRef = useRef(0);
   const [isSpeechToTextEnabled, setIsSpeechToTextEnabled] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const [isDataFetched, setIsDataFetched] = useState(false);
-  
+  const lastReadIndexRef = useRef(0);
+
+
   useEffect(() => {
+
     fetchData();
     const storedPrompts = localStorage.getItem('previousPrompts');
     if (storedPrompts) {
@@ -42,28 +56,23 @@ const ChatGPT = () => {
   }, [previousPrompts]);
 
   useEffect(() => {
-    
-  const handleTextToSpeech = () => {
-    if (output.length === 0) return;
+    const handleTextToSpeech = () => {
+      if (output.length === 0) return;
 
-    const latestOutput = latestOutputRef.current;
-    const startIndex = lastReadIndexRef.current;
-    const endIndex = latestOutput.length;
+      const utterances = output
+        .slice(lastReadIndexRef.current)
+        .map((message) => {
+          const utterance = new SpeechSynthesisUtterance(message);
+          return utterance;
+        });
 
-    const utterances = [];
+      utterances.forEach((utterance) => {
+        speechSynthesis.speak(utterance);
+      });
 
-    for (let i = startIndex; i < endIndex; i++) {
-      const utterance = new SpeechSynthesisUtterance(latestOutput[i]);
-      utterances.push(utterance);
-    }
+      lastReadIndexRef.current = output.length;
+    };
 
-    utterances.forEach((utterance) => {
-      speechSynthesis.speak(utterance);
-    });
-
-    lastReadIndexRef.current = endIndex;
-  };
-    latestOutputRef.current = output;
     if (isTextToSpeechEnabled) {
       handleTextToSpeech();
     }
@@ -97,16 +106,13 @@ const ChatGPT = () => {
 
       setPreviousPrompts(prompts);
       setPreviousAnswers(answers);
-      setIsDataFetched(true); // Update the state to indicate that data is fetched
+      setIsDataFetched(true);
       setIsLoading(false);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setText(event.target.value);
-  };
   const sendPromptToPython = async (prompt: string) => {
     try {
       const requestOptions = {
@@ -114,17 +120,22 @@ const ChatGPT = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt }),
       };
-  
+
       const response = await fetch('http://localhost:5000', requestOptions);
       const data = await response.json();
       const serverResponse = `\r\nLearnGPT: ${data.data}`;
-  
+
       setOutput((prevOutput) => [...prevOutput, serverResponse]);
       saveAnswer(jwt, user_id, data.data);
     } catch (error) {
       console.error('Error fetching data from Python script:', error);
     }
   };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setText(event.target.value);
+  };
+
   const handleClick = async () => {
     if (!text) return;
 
@@ -138,7 +149,6 @@ const ChatGPT = () => {
     await savePrompt(jwt, user_id, text);
     await sendPromptToPython(text);
   };
-
 
   const handleKeyDown = async (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
@@ -171,7 +181,6 @@ const ChatGPT = () => {
       </div>
     ));
   };
-  
 
   const outputText = isDataFetched ? generateOutputText() : null;
 
@@ -220,10 +229,18 @@ const ChatGPT = () => {
             onChange={handleChange}
             onKeyDown={handleKeyDown}
           />
-          <Button variant="contained" endIcon={<VolumeUpIcon />} onClick={handleTextToSpeechToggle}>
+          <Button
+            variant="contained"
+            endIcon={<VolumeUpIcon />}
+            onClick={handleTextToSpeechToggle}
+          >
             {isTextToSpeechEnabled ? 'Disable' : 'Enable'} Text to Speech
           </Button>
-          <Button variant="contained" endIcon={<MicIcon />} onClick={handleSpeechToTextToggle}>
+          <Button
+            variant="contained"
+            endIcon={<MicIcon />}
+            onClick={handleSpeechToTextToggle}
+          >
             {isSpeechToTextEnabled ? 'Disable' : 'Enable'} Speech to Text
           </Button>
         </div>
@@ -233,4 +250,3 @@ const ChatGPT = () => {
 };
 
 export default ChatGPT;
-
