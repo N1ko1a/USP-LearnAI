@@ -7,19 +7,6 @@ import 'aos/dist/aos.css'
 
 function Pricing(){
 
-  const[click, setClick] = useState(false)
-    const handleClick = () => setClick(!click)
-
-    const [showPopup, setShowPopup] = useState(false);
-
-    const handleOpenPopup = () => {
-      setShowPopup(true);
-    };
-  
-    const handleClosePopup = () => {
-      setShowPopup(false);
-    };
-
     const [showPopup1, setShowPopup1] = useState(false);
 
 const handleOpenPopup1 = () => {

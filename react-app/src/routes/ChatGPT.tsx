@@ -42,6 +42,27 @@ const ChatGPT = () => {
   }, [previousPrompts]);
 
   useEffect(() => {
+    
+  const handleTextToSpeech = () => {
+    if (output.length === 0) return;
+
+    const latestOutput = latestOutputRef.current;
+    const startIndex = lastReadIndexRef.current;
+    const endIndex = latestOutput.length;
+
+    const utterances = [];
+
+    for (let i = startIndex; i < endIndex; i++) {
+      const utterance = new SpeechSynthesisUtterance(latestOutput[i]);
+      utterances.push(utterance);
+    }
+
+    utterances.forEach((utterance) => {
+      speechSynthesis.speak(utterance);
+    });
+
+    lastReadIndexRef.current = endIndex;
+  };
     latestOutputRef.current = output;
     if (isTextToSpeechEnabled) {
       handleTextToSpeech();
@@ -65,7 +86,7 @@ const ChatGPT = () => {
 
       recognitionRef.current = recognition;
     }
-  }, []);
+  });
 
   const fetchData = async (): Promise<void> => {
     try {
@@ -118,26 +139,6 @@ const ChatGPT = () => {
     await sendPromptToPython(text);
   };
 
-  const handleTextToSpeech = () => {
-    if (output.length === 0) return;
-
-    const latestOutput = latestOutputRef.current;
-    const startIndex = lastReadIndexRef.current;
-    const endIndex = latestOutput.length;
-
-    const utterances = [];
-
-    for (let i = startIndex; i < endIndex; i++) {
-      const utterance = new SpeechSynthesisUtterance(latestOutput[i]);
-      utterances.push(utterance);
-    }
-
-    utterances.forEach((utterance) => {
-      speechSynthesis.speak(utterance);
-    });
-
-    lastReadIndexRef.current = endIndex;
-  };
 
   const handleKeyDown = async (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {

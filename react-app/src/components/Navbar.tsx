@@ -5,7 +5,6 @@ import { Link } from 'react-scroll';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import Popup from './Popup';
 import Cookies from 'universal-cookie';
-import Popup1 from './Popup1';
 
 function Navbar() {
   const [click, setClick] = useState(false);

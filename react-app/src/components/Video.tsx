@@ -5,7 +5,6 @@ import Cookies from 'universal-cookie';
 import spaceVideo from '../assets/alb_earth1008_1080p_24fps.mp4';
 
 function Video() {
-  const [loggedIn, setLoggedIn] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
   const cookies = new Cookies();
@@ -36,7 +35,7 @@ function Video() {
           <p>We’ve trained a model called LearnGPT which interacts in a conversational way and teaches you English.</p>
 
           <div>
-            {loggedIn ? (
+            {isLoggedIn ? (
               <Link to='/ChatGPT' className="btn" onClick={handleTryLearning}>
                 Try Learning
               </Link>
