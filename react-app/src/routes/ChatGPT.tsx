@@ -58,20 +58,23 @@ const ChatGPT: React.FC = () => {
   useEffect(() => {
     const handleTextToSpeech = () => {
       if (TTStext.length === 0) return;
-
+    
+      const lastSentIndex = output.findIndex((item) => item.props && item.props.className === 'user');
       const utterances = TTStext
-        .slice(lastReadIndexRef.current)
+        .slice(lastSentIndex)
         .map((message) => {
           const utterance = new SpeechSynthesisUtterance(message);
           return utterance;
         });
-
+    
       utterances.forEach((utterance) => {
         speechSynthesis.speak(utterance);
       });
-
+    
       lastReadIndexRef.current = TTStext.length;
     };
+    
+    
 
     if (isTextToSpeechEnabled) {
       handleTextToSpeech();
@@ -122,21 +125,35 @@ const ChatGPT: React.FC = () => {
   
       const response = await fetch('http://localhost:5000', requestOptions);
       const data = await response.json();
-      const TTStext = `\r\nLearnAI: ${data.data.substring(8)}`;
-      const serverResponse = (
-        <div className="answer">
-          <span className="bot">{`\r\nLearnAI: `}</span>
-          {data.data.substring(8)}
-        </div>
-      );
+      let TTStext = "";
+      let serverResponse = null;
+  
+      if (data.data.startsWith("LearnAI:")) {
+        TTStext = `\r\nLearnAI: ${data.data.substring(8)}`;
+        serverResponse = (
+          <div className="answer">
+            <span className="bot">{`\r\nLearnAI: `}</span>
+            {data.data.substring(8)}
+          </div>
+        );
+      } else {
+        TTStext = `\r\nLearnAI: ${data.data}`;
+        serverResponse = (
+          <div className="answer">
+            <span className="bot">{`\r\nLearnAI: `}</span>
+            {data.data}
+          </div>
+        );
+      }
   
       setOutput((prevOutput) => [...prevOutput, serverResponse]);
-      setTTSText((prevOutput) => [...prevOutput, TTStext]);
+      setTTSText((prevTTS) => [...prevTTS, TTStext]);
       saveAnswer(cookies.get('jwt')?.json, getUserIDFromJWT(cookies.get('jwt')?.json), data.data);
     } catch (error) {
       console.error('Error fetching data from Python script:', error);
     }
   };
+  
   
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -149,13 +166,13 @@ const ChatGPT: React.FC = () => {
     const userMessage = (
       <span>
         <div className='prompt'>
-        <span className="user">You:</span> {text}
+          <span className="user">You:</span> {text}
         </div>
       </span>
     );
     const TTStext = `You: ${text}`;
     setOutput((prevOutput) => [...prevOutput, userMessage]);
-    setTTSText((prevOutput) => [...prevOutput, TTStext]);
+    setTTSText((prevTTS) => [...prevTTS, TTStext]);
     setText('');
   
     const jwt = cookies.get('jwt')?.json;
@@ -163,6 +180,7 @@ const ChatGPT: React.FC = () => {
     await sendPromptToPython(text);
     await savePrompt(jwt, getUserIDFromJWT(jwt), text);
   };
+  
   
   
 
@@ -182,12 +200,15 @@ const ChatGPT: React.FC = () => {
         {previousAnswers[index] && (
           <div className="answer">
             <span className="bot">{'LearnAI: '}</span>
-            {index === 0 ? previousAnswers[index].answer : previousAnswers[index].answer.substring(8)}
+            {previousAnswers[index].answer.startsWith('LearnAI:')
+              ? previousAnswers[index].answer.substring(8)
+              : previousAnswers[index].answer}
           </div>
         )}
       </div>
     ));
   };
+  
   
   
   
