@@ -28,7 +28,8 @@ const ChatGPT: React.FC = () => {
   const [previousPrompts, setPreviousPrompts] = useState<Prompt[]>([]);
   const [previousAnswers, setPreviousAnswers] = useState<Answer[]>([]);
   const [text, setText] = useState('');
-  const [output, setOutput] = useState<string[]>([]);
+  const [TTStext, setTTSText] = useState<string[]>([]);
+  const [output, setOutput] = useState<(string | JSX.Element)[]>([]);
   const [isTextToSpeechEnabled, setIsTextToSpeechEnabled] = useState(false);
   const [isSpeechToTextEnabled, setIsSpeechToTextEnabled] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
@@ -56,9 +57,9 @@ const ChatGPT: React.FC = () => {
 
   useEffect(() => {
     const handleTextToSpeech = () => {
-      if (output.length === 0) return;
+      if (TTStext.length === 0) return;
 
-      const utterances = output
+      const utterances = TTStext
         .slice(lastReadIndexRef.current)
         .map((message) => {
           const utterance = new SpeechSynthesisUtterance(message);
@@ -69,13 +70,13 @@ const ChatGPT: React.FC = () => {
         speechSynthesis.speak(utterance);
       });
 
-      lastReadIndexRef.current = output.length;
+      lastReadIndexRef.current = TTStext.length;
     };
 
     if (isTextToSpeechEnabled) {
       handleTextToSpeech();
     }
-  }, [output, isTextToSpeechEnabled]);
+  }, [TTStext, isTextToSpeechEnabled]);
 
   useEffect(() => {
     const initSpeechRecognition = () => {
@@ -121,6 +122,7 @@ const ChatGPT: React.FC = () => {
   
       const response = await fetch('http://localhost:5000', requestOptions);
       const data = await response.json();
+      const TTStext = `\r\nLearnAI: ${data.data.substring(8)}`;
       const serverResponse = (
         <div className="answer">
           <span className="bot">{`\r\nLearnAI: `}</span>
@@ -129,6 +131,7 @@ const ChatGPT: React.FC = () => {
       );
   
       setOutput((prevOutput) => [...prevOutput, serverResponse]);
+      setTTSText((prevOutput) => [...prevOutput, TTStext]);
       saveAnswer(cookies.get('jwt')?.json, getUserIDFromJWT(cookies.get('jwt')?.json), data.data);
     } catch (error) {
       console.error('Error fetching data from Python script:', error);
@@ -150,15 +153,15 @@ const ChatGPT: React.FC = () => {
         </div>
       </span>
     );
-  
+    const TTStext = `You: ${text}`;
     setOutput((prevOutput) => [...prevOutput, userMessage]);
+    setTTSText((prevOutput) => [...prevOutput, TTStext]);
     setText('');
   
     const jwt = cookies.get('jwt')?.json;
     if (!jwt) return;
-  
-    await savePrompt(jwt, getUserIDFromJWT(jwt), text);
     await sendPromptToPython(text);
+    await savePrompt(jwt, getUserIDFromJWT(jwt), text);
   };
   
   
