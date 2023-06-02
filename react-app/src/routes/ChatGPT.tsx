@@ -115,12 +115,12 @@ const ChatGPT: React.FC = () => {
     }
   };
 
-  const sendPromptToPython = async (prompt: string) => {
+  const sendPromptToPython = async (prompt: string, user_id: string) => {
     try {
       const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt, user_id }),
       };
   
       const response = await fetch('http://localhost:5000', requestOptions);
@@ -177,7 +177,8 @@ const ChatGPT: React.FC = () => {
   
     const jwt = cookies.get('jwt')?.json;
     if (!jwt) return;
-    await sendPromptToPython(text);
+    const user_id = getUserIDFromJWT(jwt);
+    await sendPromptToPython(text, user_id);
     await savePrompt(jwt, getUserIDFromJWT(jwt), text);
   };
   
