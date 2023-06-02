@@ -118,17 +118,23 @@ const ChatGPT: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt }),
       };
-
+  
       const response = await fetch('http://localhost:5000', requestOptions);
       const data = await response.json();
-      const serverResponse = `\r\n${data.data}`;
-
+      const serverResponse = (
+        <div className="answer">
+          <span className="bot">{`\r\nLearnAI: `}</span>
+          {data.data.substring(8)}
+        </div>
+      );
+  
       setOutput((prevOutput) => [...prevOutput, serverResponse]);
       saveAnswer(cookies.get('jwt')?.json, getUserIDFromJWT(cookies.get('jwt')?.json), data.data);
     } catch (error) {
       console.error('Error fetching data from Python script:', error);
     }
   };
+  
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setText(event.target.value);
@@ -136,18 +142,26 @@ const ChatGPT: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!text) return;
-
-    const userMessage = `You: ${text}`;
-
+  
+    const userMessage = (
+      <span>
+        <div className='prompt'>
+        <span className="user">You:</span> {text}
+        </div>
+      </span>
+    );
+  
     setOutput((prevOutput) => [...prevOutput, userMessage]);
     setText('');
-
+  
     const jwt = cookies.get('jwt')?.json;
     if (!jwt) return;
-
+  
     await savePrompt(jwt, getUserIDFromJWT(jwt), text);
     await sendPromptToPython(text);
   };
+  
+  
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
@@ -164,12 +178,16 @@ const ChatGPT: React.FC = () => {
         </div>
         {previousAnswers[index] && (
           <div className="answer">
-            <span className="bot">LearnAI:</span> {previousAnswers[index].answer}
+            <span className="bot">{'LearnAI: '}</span>
+            {index === 0 ? previousAnswers[index].answer : previousAnswers[index].answer.substring(8)}
           </div>
         )}
       </div>
     ));
   };
+  
+  
+  
 
   const outputText = isDataFetched ? generateOutputText() : null;
 
