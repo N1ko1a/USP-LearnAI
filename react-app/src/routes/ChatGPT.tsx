@@ -21,6 +21,12 @@ interface Answer {
   answer: string;
 }
 
+interface BotMessage {
+  props: {
+    children: string;
+  };
+}
+
 const cookies = new Cookies();
 
 const ChatGPT: React.FC = () => {
@@ -59,12 +65,19 @@ const ChatGPT: React.FC = () => {
     const handleTextToSpeech = () => {
       if (TTStext.length === 0) return;
     
-      const lastSentIndex = output.findIndex((item) => item.props && item.props.className === 'user');
+      const lastSentIndex = output.findIndex(
+        (item) => typeof item !== 'string' && item.props && item.props.className === 'user'
+      );
       const utterances = TTStext
         .slice(lastSentIndex)
-        .map((message) => {
-          const utterance = new SpeechSynthesisUtterance(message);
-          return utterance;
+        .map((message: string | BotMessage) => {
+          if (typeof message === 'string') {
+            return new SpeechSynthesisUtterance(message);
+          } else {
+            const utterance = new SpeechSynthesisUtterance();
+            utterance.text = message.props.children;
+            return utterance;
+          }
         });
     
       utterances.forEach((utterance) => {
@@ -73,13 +86,11 @@ const ChatGPT: React.FC = () => {
     
       lastReadIndexRef.current = TTStext.length;
     };
-    
-    
 
     if (isTextToSpeechEnabled) {
       handleTextToSpeech();
     }
-  }, [TTStext, isTextToSpeechEnabled]);
+  });
 
   useEffect(() => {
     const initSpeechRecognition = () => {
@@ -126,8 +137,8 @@ const ChatGPT: React.FC = () => {
       const response = await fetch('http://localhost:5000', requestOptions);
       const data = await response.json();
       let TTStext = "";
-      let serverResponse = null;
-  
+      let serverResponse: JSX.Element | null = null;
+
       if (data.data.startsWith("LearnAI:")) {
         TTStext = `\r\nLearnAI: ${data.data.substring(8)}`;
         serverResponse = (
@@ -145,8 +156,8 @@ const ChatGPT: React.FC = () => {
           </div>
         );
       }
-  
-      setOutput((prevOutput) => [...prevOutput, serverResponse]);
+
+      setOutput((prevOutput) => [...prevOutput, serverResponse || '']);
       setTTSText((prevTTS) => [...prevTTS, TTStext]);
       saveAnswer(cookies.get('jwt')?.json, getUserIDFromJWT(cookies.get('jwt')?.json), data.data);
     } catch (error) {
