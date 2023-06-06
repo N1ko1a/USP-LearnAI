@@ -135,35 +135,40 @@ const ChatGPT: React.FC = () => {
       };
   
       const response = await fetch('http://localhost:5000', requestOptions);
-      const data = await response.json();
-      let TTStext = "";
-      let serverResponse: JSX.Element | null = null;
-
-      if (data.data.startsWith("LearnAI:")) {
-        TTStext = `\r\nLearnAI: ${data.data.substring(8)}`;
-        serverResponse = (
-          <div className="answer">
-            <span className="bot">{`\r\nLearnAI: `}</span>
-            {data.data.substring(8)}
-          </div>
-        );
+      if (response.status === 200) {
+        const data = await response.json();
+        let TTStext = "";
+        let serverResponse: JSX.Element | null = null;
+  
+        if (data.data.startsWith("LearnAI:")) {
+          TTStext = `\r\nLearnAI: ${data.data.substring(8)}`;
+          serverResponse = (
+            <div className="answer">
+              <span className="bot">{`\r\nLearnAI: `}</span>
+              {data.data.substring(8)}
+            </div>
+          );
+        } else {
+          TTStext = `\r\nLearnAI: ${data.data}`;
+          serverResponse = (
+            <div className="answer">
+              <span className="bot">{`\r\nLearnAI: `}</span>
+              {data.data}
+            </div>
+          );
+        }
+  
+        setOutput((prevOutput) => [...prevOutput, serverResponse || '']);
+        setTTSText((prevTTS) => [...prevTTS, TTStext]);
+        saveAnswer(cookies.get('jwt')?.json, getUserIDFromJWT(cookies.get('jwt')?.json), data.data);
       } else {
-        TTStext = `\r\nLearnAI: ${data.data}`;
-        serverResponse = (
-          <div className="answer">
-            <span className="bot">{`\r\nLearnAI: `}</span>
-            {data.data}
-          </div>
-        );
+        console.error('Error: Unexpected response code from the Python script');
       }
-
-      setOutput((prevOutput) => [...prevOutput, serverResponse || '']);
-      setTTSText((prevTTS) => [...prevTTS, TTStext]);
-      saveAnswer(cookies.get('jwt')?.json, getUserIDFromJWT(cookies.get('jwt')?.json), data.data);
     } catch (error) {
       console.error('Error fetching data from Python script:', error);
     }
   };
+  
   
   
 
