@@ -1,0 +1,27 @@
+version: '3'
+services:
+  frontend:
+    build:
+      context: ./react-app
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - /home/nikola/Nikola/GitHub/USP-LearnAI/react-app:/react-app
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+
+# u config.js morali smo da promenimo ip 127.0.0.1 (localhost) sa mongo da bih mongodb radio kako treba u suprotnom konekcija ne bih bila dobra i podaci ne bih stigli do baze
+
+  
